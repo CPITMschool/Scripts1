@@ -73,3 +73,8 @@ sudo systemctl restart starknet &>/dev/null
 echo "Нода додана на автозавантаження на сервері, запущена"
 echo "-----------------------------------------------------------------------------"
 }
+
+logo
+install
+touch $HOME/.sdd_StarkNet_do_not_remove
+logo
