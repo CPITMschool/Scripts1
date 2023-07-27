@@ -1,1 +1,4 @@
-{ "name" : "Meson"}
+{ "name" : "Meson"
+"cpu" : "2 CPU"
+"ram" : "4 GB RAM"
+"disk" : "40 GB Storage" }
