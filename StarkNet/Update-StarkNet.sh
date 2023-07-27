@@ -38,3 +38,9 @@ docker-compose up -d
 echo "Нода оновлена і запущена"
 echo "-----------------------------------------------------------------------------"
 }
+
+logo
+if [ -f $HOME/.sdd_StarkNet_do_not_remove ]; then
+  update
+  logo
+fi
