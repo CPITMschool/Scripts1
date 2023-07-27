@@ -104,3 +104,8 @@ function docker_compose_up {
 }
 
 }
+
+logo
+install
+touch $HOME/.sdd_Subspace_do_not_remove
+logo
