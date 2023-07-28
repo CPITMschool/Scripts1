@@ -14,13 +14,13 @@ echo "--------------------------------------------------------------------------
   if [ ! $SUBSPACE_NODENAME ]; then
   echo -e "Введіть ім'я вашої ноди"
   line_1
-  read SUBSPACE_NODENAME
+  read -p SUBSPACE_NODENAME
   fi
 
   if [ ! $WALLET_ADDRESS ]; then
   echo -e "Введіть свою polkadot.js extension адресу"
   line_1
-  read WALLET_ADDRESS
+  read -p WALLET_ADDRESS
   fi
 
   export CHAIN="gemini-3e"
