@@ -6,40 +6,26 @@ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.s
 
 function install() {
 echo "-----------------------------------------------------------------------------"
-function install_tools {
+
   sudo apt update && sudo apt install mc wget htop jq git -y
-}
-
-function install_docker {
   curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Install-Docker.sh | bash
-}
-
-function install_ufw {
   curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/install_ufw.sh | bash
-}
 
-function read_nodename {
   if [ ! $SUBSPACE_NODENAME ]; then
   echo -e "Введіть ім'я вашої ноди"
   line_1
   read SUBSPACE_NODENAME
   fi
-}
 
-function read_wallet {
   if [ ! $WALLET_ADDRESS ]; then
   echo -e "Введіть свою polkadot.js extension адресу"
   line_1
   read WALLET_ADDRESS
   fi
-}
 
-function get_vars {
   export CHAIN="gemini-3e"
   export RELEASE="gemini-3e-2023-jul-03"
-}
 
-function eof_docker_compose {
   mkdir -p $HOME/subspace_docker/
   sudo tee <<EOF >/dev/null $HOME/subspace_docker/docker-compose.yml
   version: "3.7"
@@ -97,11 +83,7 @@ function eof_docker_compose {
     node-data:
     farmer-data:
 EOF
-}
-
-function docker_compose_up {
   docker-compose -f $HOME/subspace_docker/docker-compose.yml up -d
-}
 
 }
 
