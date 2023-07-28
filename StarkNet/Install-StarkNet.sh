@@ -12,59 +12,69 @@ fi
 echo 'Ваш ключ: ' $ALCHEMY_KEY
 sleep 1
 echo 'export ALCHEMY_KEY='$ALCHEMY_KEY >> $HOME/.bash_profile
-echo "Завантажуємо софт"
-echo "-----------------------------------------------------------------------------"
-sudo apt update -y &>/dev/null
-sudo apt install build-essential libssl-dev libffi-dev python3-dev screen git python3-pip python3.*-venv -y &>/dev/null
-sudo apt-get install libgmp-dev -y &>/dev/null
-pip3 install fastecdsa &>/dev/null
-sudo apt-get install -y pkg-config &>/dev/null
-curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/install_ufw.sh | bash &>/dev/null
-curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/install_rust.sh | bash &>/dev/null
-rustup default nightly &>/dev/null
-source $HOME/.cargo/env &>/dev/null
-sleep 1
-echo "Увесь необхідний софт завантажено"
-echo "-----------------------------------------------------------------------------"
-git clone --branch v0.1.8-alpha https://github.com/eqlabs/pathfinder.git &>/dev/null
-cd pathfinder/py &>/dev/null
-python3 -m venv .venv &>/dev/null
-source .venv/bin/activate &>/dev/null
-PIP_REQUIRE_VIRTUALENV=true pip install --upgrade pip &>/dev/null
-PIP_REQUIRE_VIRTUALENV=true pip install -r requirements-dev.txt &>/dev/null
-cargo build --release --bin pathfinder &>/dev/null
+
+exists()
+{
+  command -v "$1" >/dev/null 2>&1
+}
+if exists curl; then
+	echo ''
+else
+  sudo apt install curl -y < "/dev/null"
+fi
+
+sudo apt update && sudo apt-get install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update && sudo apt install curl git tmux python3.10 python3.10-venv python3.10-dev build-essential libgmp-dev pkg-config libssl-dev -y
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y
+source $HOME/.cargo/env
+rustup update stable --force
+cd $HOME
+rm -rf pathfinder
+git clone https://github.com/eqlabs/pathfinder.git
+cd pathfinder/py
+git fetch
+git checkout v0.6.7
+#cd $HOME/pathfinder/py
+python3.10 -m venv .venv
+source .venv/bin/activate
+PIP_REQUIRE_VIRTUALENV=true pip install --upgrade pip
+PIP_REQUIRE_VIRTUALENV=true pip install -e .[dev]
+#pip install --upgrade pip
+pytest
+cd $HOME/pathfinder/
+cargo +stable build --release --bin pathfinder
+
 sleep 2
-source $HOME/.bash_profile &>/dev/null
-echo "Білд завершений успішно"
-echo "-----------------------------------------------------------------------------"
-sudo tee <<EOF >/dev/null /etc/systemd/journald.conf
-Storage=persistent
-EOF
-sudo systemctl restart systemd-journald
-sudo tee <<EOF >/dev/null /etc/systemd/system/starknet.service
-[Unit]
-Description=StarkNet Node
+source $HOME/.bash_profile
+sudo mv ~/pathfinder/target/release/pathfinder /usr/local/bin/ || exit
+
+echo "[Unit]
+Description=StarkNet
 After=network.target
+
 [Service]
-Type=simple
 User=$USER
+Type=simple
 WorkingDirectory=$HOME/pathfinder/py
-Environment=PATH="$HOME/pathfinder/py/.venv/bin:\$PATH"
-ExecStart=$HOME/pathfinder/target/release/pathfinder --ethereum.url $ALCHEMY_KEY
-Restart=always
-RestartSec=10
-LimitNOFILE=10000
+ExecStart=/bin/bash -c \"source $HOME/pathfinder/py/.venv/bin/activate && /usr/local/bin/pathfinder --http-rpc=\"0.0.0.0:9545\" --ethereum.url $ALCHEMY\"
+Restart=on-failure
+LimitNOFILE=65535
+
 [Install]
-WantedBy=multi-user.target
-EOF
-echo "Сервісні файли створені успішно"
-echo "-----------------------------------------------------------------------------"
-sudo systemctl restart systemd-journald &>/dev/null
-sudo systemctl daemon-reload &>/dev/null
-sudo systemctl enable starknet &>/dev/null
-sudo systemctl restart starknet &>/dev/null
-echo "Нода додана на автозавантаження на сервері, запущена"
-echo "-----------------------------------------------------------------------------"
+WantedBy=multi-user.target" > $HOME/starknetd.service
+sudo mv $HOME/starknetd.service /etc/systemd/system/
+sudo systemctl restart systemd-journald
+sudo systemctl daemon-reload
+sudo systemctl enable starknetd
+sudo systemctl restart starknetd
+echo "==================================================="
+echo -e '\n\e[42mCheck node status\e[0m\n' && sleep 1
+if [[ `service starknetd status | grep active` =~ "running" ]]; then
+  echo -e "Твоя StarkNet нода встановлена і працює!"
+else
+  echo -e "Твоя нода була завнтажена неправильно, будь ласка перевстанови."
+fi
 }
 
 logo
