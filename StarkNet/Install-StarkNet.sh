@@ -1,80 +1,37 @@
 #!/bin/bash
 
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+  curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh | bash
 }
 
 function install() {
-echo "-----------------------------------------------------------------------------"
-if [ ! $ALCHEMY_KEY ]; then
-	read -p "Введіть ваш HTTP (Приклад: https://eth-goerli.alchemyapi.io/v2/xZXxxxxxxxxxxc2q_bzxxxxxxxxxxWTN): " ALCHEMY_KEY
-fi
-echo 'Ваш ключ: ' $ALCHEMY_KEY
+
+read -p "Enter your Alchemy link (example: https://eth-goerli.alchemyapi.io/v2/secret): " ALCHEMY_KEY
 sleep 1
 echo 'export ALCHEMY_KEY='$ALCHEMY_KEY >> $HOME/.bash_profile
 
-exists()
-{
-  command -v "$1" >/dev/null 2>&1
-}
-if exists curl; then
-	echo ''
-else
-  sudo apt install curl -y < "/dev/null"
-fi
+"Install dependencies"
+sudo apt update
+sudo apt install mc wget curl git htop net-tools unzip jq build-essential ncdu tmux -y
 
-sudo apt update && sudo apt-get install software-properties-common -y
-sudo add-apt-repository ppa:deadsnakes/ppa -y
-sudo apt update && sudo apt install curl git tmux python3.10 python3.10-venv python3.10-dev build-essential libgmp-dev pkg-config libssl-dev -y
-sudo curl https://sh.rustup.rs -sSf | sh -s -- -y
-source $HOME/.cargo/env
-rustup update stable --force
-cd $HOME
-rm -rf pathfinder
+"Install docker and docker compose"
+bash <(curl -s https://raw.githubusercontent.com/asapov01/Starknettest/main/docker-install.sh)
+
 git clone https://github.com/eqlabs/pathfinder.git
-cd pathfinder/py
+cd $HOME/pathfinder || exit
 git fetch
-git checkout v0.6.7
-#cd $HOME/pathfinder/py
-python3.10 -m venv .venv
-source .venv/bin/activate
-PIP_REQUIRE_VIRTUALENV=true pip install --upgrade pip
-PIP_REQUIRE_VIRTUALENV=true pip install -e .[dev]
-#pip install --upgrade pip
-pytest
-cd $HOME/pathfinder/
-cargo +stable build --release --bin pathfinder
+VER=$(curl https://api.github.com/repos/eqlabs/pathfinder/releases/latest -s | jq .name -r)
+git checkout $VER
 
-sleep 2
 source $HOME/.bash_profile
-sudo mv ~/pathfinder/target/release/pathfinder /usr/local/bin/ || exit
+echo "PATHFINDER_ETHEREUM_API_URL=$ALCHEMY_KEY" > pathfinder-var.env
 
-echo "[Unit]
-Description=StarkNet
-After=network.target
-
-[Service]
-User=$USER
-Type=simple
-WorkingDirectory=$HOME/pathfinder/py
-ExecStart=/bin/bash -c \"source $HOME/pathfinder/py/.venv/bin/activate && /usr/local/bin/pathfinder --http-rpc=\"0.0.0.0:9545\" --ethereum.url $ALCHEMY\"
-Restart=on-failure
-LimitNOFILE=65535
-
-[Install]
-WantedBy=multi-user.target" > $HOME/starknetd.service
-sudo mv $HOME/starknetd.service /etc/systemd/system/
-sudo systemctl restart systemd-journald
-sudo systemctl daemon-reload
-sudo systemctl enable starknetd
-sudo systemctl restart starknetd
-echo "==================================================="
-echo -e '\n\e[42mCheck node status\e[0m\n' && sleep 1
-if [[ `service starknetd status | grep active` =~ "running" ]]; then
-  echo -e "Твоя StarkNet нода встановлена і працює!"
-else
-  echo -e "Твоя нода була завнтажена неправильно, будь ласка перевстанови."
-fi
+"Spin up node"
+docker compose pull
+mkdir -p $HOME/pathfinder/pathfinder
+chown -R 1000.1000 .
+sleep 1
+docker compose up -d
 }
 
 logo
