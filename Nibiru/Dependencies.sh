@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 printGreen "Installing dependencies..." && sleep 1
 sudo apt-get update &&
 sudo apt-get install -y curl iptables build-essential git lz4 wget jq make gcc nano chrony \
