@@ -5,7 +5,13 @@ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.s
 }
 
 function install() {
+function printDelimiter {
+  echo "==========================================="
+}
 
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
 source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Ports.sh) && sleep 1
 export -f selectPortSet && selectPortSet
 
