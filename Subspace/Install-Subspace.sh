@@ -5,85 +5,62 @@ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.s
 }
 
 function install() {
-echo "-----------------------------------------------------------------------------"
+exists()
+{
+  command -v "$1" >/dev/null 2>&1
+}
+if exists curl; then
+	echo ''
+else
+  sudo apt update && sudo apt install curl -y < "/dev/null"
+fi
+bash_profile=$HOME/.bash_profile
+if [ -f "$bash_profile" ]; then
+    . $HOME/.bash_profile
+fi
 
-  sudo apt update && sudo apt install mc wget htop jq git -y
-  curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Install-Docker.sh | bash
-  curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/install_ufw.sh | bash
+sudo apt update && sudo apt install ocl-icd-opencl-dev libopencl-clang-dev libgomp1 -y
+cd $HOME
+wget -O subspace-cli https://github.com/subspace/subspace-cli/releases/download/v0.5.3-alpha-2/subspace-cli-ubuntu-x86_64-skylake-v0.5.3-alpha-2 
+sudo chmod +x subspace-cli
+sudo mv subspace-cli /usr/local/bin/
+sudo rm -rf $HOME/.config/subspace-cli
+/usr/local/bin/subspace-cli init
+#systemctl stop subspaced subspaced-farmer &>/dev/null
+#rm -rf ~/.local/share/subspace*
 
-  if [ ! $SUBSPACE_NODENAME ]; then
-  echo -e "Введіть ім'я вашої ноди"
-  line_1
-  read -p SUBSPACE_NODENAME
-  fi
+#source ~/.bash_profile
+sleep 1
 
-  if [ ! $WALLET_ADDRESS ]; then
-  echo -e "Введіть свою polkadot.js extension адресу"
-  line_1
-  read -p WALLET_ADDRESS
-  fi
+echo "[Unit]
+Description=Subspace Node
+After=network.target
 
-  export CHAIN="gemini-3e"
-  export RELEASE="gemini-3e-2023-jul-03"
+[Service]
+User=$USER
+Type=simple
+ExecStart=/usr/local/bin/subspace-cli farm --verbose
+Restart=on-failure
+LimitNOFILE=1024000
 
-  mkdir -p $HOME/subspace_docker/
-  sudo tee <<EOF >/dev/null $HOME/subspace_docker/docker-compose.yml
-  version: "3.7"
-  services:
-    node:
-      image: ghcr.io/subspace/node:$RELEASE
-      volumes:
-        - node-data:/var/subspace:rw
-      ports:
-        - "0.0.0.0:32333:30333"
-        - "0.0.0.0:32433:30433"
-      restart: unless-stopped
-      command: [
-        "--chain", "$CHAIN",
-        "--base-path", "/var/subspace",
-        "--execution", "wasm",
-        "--blocks-pruning", "archive",
-        "--state-pruning", "archive",
-        "--port", "30333",
-        "--unsafe-rpc-external",
-        "--dsn-listen-on", "/ip4/0.0.0.0/tcp/30433",
-        "--rpc-cors", "all",
-        "--rpc-methods", "safe",
-        "--dsn-disable-private-ips",
-        "--no-private-ipv4",
-        "--validator",
-        "--name", "$SUBSPACE_NODENAME",
-        "--telemetry-url", "wss://telemetry.subspace.network/submit 0",
-        "--out-peers", "100"
-      ]
-      healthcheck:
-        timeout: 5s
-        interval: 30s
-        retries: 5
+[Install]
+WantedBy=multi-user.target" > $HOME/subspaced.service
 
-    farmer:
-      depends_on:
-        - node
-      image: ghcr.io/subspace/farmer:$RELEASE
-      volumes:
-        - farmer-data:/var/subspace:rw
-      ports:
-        - "0.0.0.0:32533:30533"
-      restart: unless-stopped
-      command: [
-        "--base-path", "/var/subspace",
-        "farm",
-        "--disable-private-ips",
-        "--node-rpc-url", "ws://node:9944",
-        "--listen-on", "/ip4/0.0.0.0/tcp/30533",
-        "--reward-address", "$WALLET_ADDRESS",
-        "--plot-size", "100G"
-      ]
-  volumes:
-    node-data:
-    farmer-data:
-EOF
-  docker-compose -f $HOME/subspace_docker/docker-compose.yml up -d
+sudo mv $HOME/subspaced.service /etc/systemd/system/
+sudo systemctl restart systemd-journald
+sudo systemctl daemon-reload
+sudo systemctl enable subspaced
+sudo systemctl restart subspaced
+
+echo "==================================================="
+echo -e '\n\e[42mCheck node status\e[0m\n' && sleep 5
+if [[ `service subspaced status | grep active` =~ "running" ]]; then
+  echo -e "Your Subspace node \e[32minstalled and works\e[39m!"
+  echo -e "You can check node status by the command \e[7mservice subspaced status\e[0m"
+  echo -e "Press \e[7mQ\e[0m for exit from status menu"
+else
+  echo -e "Your Subspace node \e[31mwas not installed correctly\e[39m, please reinstall."
+fi
 
 }
 
