@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function printDelimiter {
+  echo "==========================================="
+}
+
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 # default ports for cosmos
 PORT_GRPC=9090
 PORT_GRPC_WEB=9091
