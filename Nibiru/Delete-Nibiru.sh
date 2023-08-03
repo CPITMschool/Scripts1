@@ -1,23 +1,24 @@
 #!/bin/bash
 
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+  bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
 
 function delete() {
-reset
-rm -f $HOME/.sdd_Nibiru_do_not_remove
-cd $HOME
-sudo systemctl stop nibid
-sudo systemctl disable nibid
-rm -rf $HOME/nibiru
-rm -rf $HOME/.nibid
-rm /usr/local/bin/nibid
-rm /etc/systemd/system/nibid.service
+  systemctl stop nibid
+  systemctl disable nibid
+  rm -rf $(which nibid) ~/.nibid ~/nibiru
 }
 
-logo
 if [ -f $HOME/.sdd_Nibiru_do_not_remove ]; then
   delete
-  logo
 fi
+
+logo
+delete
+
+printGreen "Nibiru node видалено"
