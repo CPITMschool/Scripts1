@@ -1,23 +1,25 @@
 #!/bin/bash
 
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+  bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
 
 function delete() {
-reset
-rm -f $HOME/.sdd_Lava_do_not_remove
-cd $HOME
-systemctl stop lavad
-systemctl disable lavad
-rm -f /etc/systemd/system/lavad.service
-rm -rf GHFkqmTzpdNLDd6T
-rm -rf .lava
-rm -f /usr/local/bin/lavad
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+  sudo systemctl stop lavad
+  sudo systemctl disable lavad
+  sudo rm -rf $HOME/.lava
+  sudo rm -rf $HOME/lavad
+  sudo rm -rf /etc/systemd/system/lavad.service
+  sudo rm -rf /usr/local/bin/lavad
+  sudo systemctl daemon-reload
 }
 
-logo
 if [ -f $HOME/.sdd_Lava_do_not_remove ]; then
   delete
-  logo
 fi
+
+logo
+printGreen "Lava node видалено"
