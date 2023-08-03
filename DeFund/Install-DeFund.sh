@@ -1,73 +1,108 @@
 #!/bin/bash
 
-function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+function install() {
+function printDelimiter {
+  echo "==========================================="
 }
 
-function install() {
-sudo apt --fix-broken install
-sudo apt-get update && sudo apt-get upgrade -y
-sudo dpkg --configure -a
-sudo apt-get install -f -y
-sudo apt install make clang pkg-config libssl-dev build-essential git gcc chrony curl jq ncdu bsdmainutils htop net-tools lsof fail2ban wget software-properties-common -y
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 
-cd $HOME
-ver="1.19.1"
-wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
-sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
-rm "go$ver.linux-amd64.tar.gz"
-export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
-go version
-sudo rm -rf defund
-git clone https://github.com/defund-labs/defund
-cd defund
-git checkout v0.2.2
+source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Ports.sh) && sleep 1
+export -f selectPortSet && selectPortSet
+
+read -r -p "Enter node moniker: " NODE_MONIKER
+
+CHAIN_ID="orbit-alpha-1"
+CHAIN_DENOM="ufetf"
+BINARY_NAME="defundd"
+BINARY_VERSION_TAG="v0.2.6"
+
+printDelimiter
+echo -e "Node moniker:       $NODE_MONIKER"
+echo -e "Chain id:           $CHAIN_ID"
+echo -e "Chain demon:        $CHAIN_DENOM"
+echo -e "Binary version tag: $BINARY_VERSION_TAG"
+printDelimiter && sleep 1
+
+source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Dependencies.sh)
+
+echo "" && printGreen "Building binaries..." && sleep 1
+
+cd || return
+rm -rf defund
+git clone https://github.com/defund-labs/defund.git
+cd defund || return
+git checkout $BINARY_VERSION_TAG
 make install
-defundd version
-export DEFUND_CHAIN="defund-private-4"
+defundd version # 0.2.6
 
-if [[ -z "$monikername" ]]; then
-  read -p "Enter a moniker name for your node: " _monikername
-  export monikername=$_monikername
-fi
+defundd config keyring-backend os
+defundd config chain-id $CHAIN_ID
+defundd init "$NODE_MONIKER" --chain-id $CHAIN_ID
 
-export DEFUND_MONIKER=$monikername
+# Download genesis and addrbook
+wget -O $HOME/.defund/config/genesis.json https://raw.githubusercontent.com/defund-labs/testnet/main/orbit-alpha-1/genesis.json
+wget -O $HOME/.defund/config/addrbook.json https://storage.palamar.io/testnet/defund/addrbook.json
 
-if [[ -z "$walletname" ]]; then
-  read -p "Enter a wallet name for your node: " _walletname
-  export walletname=$_walletname
-fi
+CONFIG_TOML=$HOME/.defund/config/config.toml
+PEERS=""
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $CONFIG_TOML
+SEEDS="f902d7562b7687000334369c491654e176afd26d@170.187.157.19:26656,2b76e96658f5e5a5130bc96d63f016073579b72d@rpc-1.defund.nodes.guru:45656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$SEEDS\"/" $CONFIG_TOML
 
-export DEFUND_WALLET=$walletname
-source $HOME/.bash_profile
-defundd init $DEFUND_MONIKER --chain-id $DEFUND_CHAIN
-sed -i.bak -e 's/^seeds *=.*/seeds = '"'9f92e47ea6861f75bf8a450a681218baae396f01@94.130.219.37:26656,f03f3a18bae28f2099648b1c8b1eadf3323cf741@162.55.211.136:26656,f8fa20444c3c56a2d3b4fdc57b3fd059f7ae3127@148.251.43.226:56656,70a1f41dea262730e7ab027bcf8bd2616160a9a9@142.132.202.86:17000,e47e5e7ae537147a23995117ea8b2d4c2a408dcb@172.104.159.69:45656,74e6425e7ec76e6eaef92643b6181c42d5b8a3b8@defund-testnet-seed.itrocket.net:443'"'/' ~/.defund/config/config.toml
-sed -i -e 's|^persistent_peers *=.*|persistent_peers = '"'d5519e378247dfb61dfe90652d1fe3e2b3005a5b@65.109.68.190:40656,a9c52398d4ea4b3303923e2933990f688c593bd8@157.90.208.222:36656,f8093378e2e5e8fc313f9285e96e70a11e4b58d5@141.94.73.39:45656,51c8bb36bfd184bdd5a8ee67431a0298218de946@57.128.80.37:26656,e26b814071e94d27aa5b23a8548d69c45221fe28@135.181.16.252:26656,72ab81b6ba22876fc7f868b58efecb05ffac9753@65.109.86.236:28656,a56c51d7a130f33ffa2965a60bee938e7a60c01f@142.132.158.4:10656,c1d2c7a810c386595e59ead21ba69555a37ac007@5.161.110.128:26656,28f14b89d10992cff60cbe98d4cd1cf84b1d2c60@88.99.214.188:26656,2b76e96658f5e5a5130bc96d63f016073579b72d@51.91.215.40:45656,11dd3e4614218bf584b6134148e2f8afae607d93@142.132.231.118:26656'"'|' $HOME/.defund/config/config.toml
-curl -s https://raw.githubusercontent.com/defund-labs/testnet/main/defund-private-4/genesis.json > ~/.defund/config/genesis.json
-sed -i.bak 's/minimum-gas-prices =.*/minimum-gas-prices = "0.0025ufetf"/g' $HOME/.defund/config/app.toml
-sudo tee /etc/systemd/system/defund.service > /dev/null <<EOF
+APP_TOML=$HOME/.defund/config/app.toml
+sed -i 's|^pruning *=.*|pruning = "custom"|g' $APP_TOML
+sed -i 's|^pruning-keep-recent  *=.*|pruning-keep-recent = "100"|g' $APP_TOML
+sed -i 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|g' $APP_TOML
+sed -i 's|^pruning-interval *=.*|pruning-interval = "19"|g' $APP_TOML
+sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $CONFIG_TOML
+indexer="null"
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $CONFIG_TOML
+sed -i 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.0001ufetf"|g' $APP_TOML
+
+# Customize ports
+CLIENT_TOML=$HOME/.defund/config/client.toml
+sed -i.bak -e "s/^external_address *=.*/external_address = \"$(wget -qO- eth0.me):$PORT_PPROF_LADDR\"/" $CONFIG_TOML
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:$PORT_PROXY_APP\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:$PORT_RPC\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:$PORT_P2P\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:$PORT_PPROF_LADDR\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":$PORT_PROMETHEUS\"%" $CONFIG_TOML && \
+sed -i.bak -e "s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:$PORT_GRPC\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:$PORT_GRPC_WEB\"%; s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:$PORT_API\"%" $APP_TOML && \
+sed -i.bak -e "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:$PORT_RPC\"%" $CLIENT_TOML
+
+printGreen "Starting service and synchronization..." && sleep 1
+
+sudo tee /etc/systemd/system/defundd.service > /dev/null << EOF
 [Unit]
-Description=Defund
-After=network.target
+Description=Defund Node
+After=network-online.target
 [Service]
-Type=simple
 User=$USER
 ExecStart=$(which defundd) start
 Restart=on-failure
-LimitNOFILE=65535
+RestartSec=10
+LimitNOFILE=10000
 [Install]
 WantedBy=multi-user.target
 EOF
-sudo systemctl restart systemd-journald
-sleep 1
+
+
+
+# Add snapshot here
+sudo cp $HOME/.defund/data/priv_validator_state.json $HOME/.defund/priv_validator_state.json.backup && sleep 5
+rm -rf $HOME/.defund/data
+
+curl -L https://snapshots.kjnodes.com/defund-testnet/snapshot_latest.tar.lz4| tar -Ilz4 -xf - -C $HOME/.defund && sleep 5
+sudo mv $HOME/.defund/priv_validator_state.json.backup $HOME/.defund/data/priv_validator_state.json
+
 sudo systemctl daemon-reload
-sudo systemctl enable defund
-sudo systemctl restart defund
+sudo systemctl enable defundd
+sudo systemctl start defundd
+
+printDelimiter
+printGreen "Check logs:            sudo journalctl -u $BINARY_NAME -f -o cat"
+printGreen "Check synchronization: $BINARY_NAME status 2>&1 | jq .SyncInfo.catching_up"
+printDelimiter
 
 }
-
-logo
 install
-touch $HOME/.sdd_Defund_do_not_remove
-logo
