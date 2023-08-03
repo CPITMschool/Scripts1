@@ -1,29 +1,26 @@
 #!/bin/bash
 
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+  bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
 
 function delete() {
-reset
-rm -f $HOME/.sdd_Defund_do_not_remove
-cd $HOME
-sudo systemctl stop defund
-sudo systemctl disable defund
-sudo rm -rf /etc/systemd/system/defund.service
-sudo systemctl daemon-reload
-rm -rf $HOME/defund
-rm -rf $HOME/.defund
-rm -rf $HOME/go
-unset DEFUND_CHAIN
-unset DEFUND_MONIKER
-unset DEFUND_WALLET
-unset monikername
-unset walletname
+  sudo systemctl stop defundd && sudo systemctl disable defundd
+  sudo rm -rf /etc/systemd/system/defundd
+  sudo rm -rf /usr/local/bin/defundd
+  sudo rm -rf $HOME/.defund
+  sudo rm -rf $HOME/defund
 }
 
-logo
 if [ -f $HOME/.sdd_Defund_do_not_remove ]; then
   delete
-  logo
 fi
+
+logo
+delete
+
+printGreen "DeFund node видалено"
