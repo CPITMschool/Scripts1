@@ -1,15 +1,29 @@
 #!/bin/bash
 
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
 
 function update() {
-sudo apt update && sudo apt upgrade -y
+  cd /root/lava
+  git fetch --all
+  git checkout v0.16.0
+  make install
+  lavad version --long | grep -e commit -e version
+  systemctl restart lavad
 }
 
-logo
-if [ -f $HOME/.sdd_Lava_do_not_remove ]; then
+if [ -f /root/.sdd_Lava_do_not_remove ]; then
   update
-  logo
 fi
+
+logo
+update
+
+printGreen "Lava node оновлено"
+
+cd ~
