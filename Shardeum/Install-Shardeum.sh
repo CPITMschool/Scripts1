@@ -1,34 +1,44 @@
 #!/bin/bash
 
 function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+    bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
+
+function printGreen {
+    echo -e "\033[1;32m${1}\033[0m"
+}
+
+clear
+logo
 
 function install() {
-sudo apt --fix-broken install
-sudo apt-get update && sudo apt-get upgrade -y
-sudo dpkg --configure -a
-sudo apt-get install -f -y
-sudo apt install curl git npm -y
+    printGreen "Розпочався процес встановлення..." && sleep 2
 
-apt remove npm -y
-rm -Rf $HOME/.npm
-apt install npm -y
-npm cache clean -f
-npm install -g n
-n stable
-npm install -g npm@latest
-sudo apt install docker.io -y
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-curl -O https://gitlab.com/shardeum/validator/dashboard/-/raw/main/installer.sh && chmod +x installer.sh && ./installer.sh
-cd $HOME/.shardeum
-./shell.sh
-operator-cli gui start
+    printGreen "Встановлюємо Docker"
+    sudo apt install wget jq ca-certificates gnupg -y
+    source /etc/*-release
+    rm -f /usr/share/keyrings/docker-archive-keyring.gpg
+    wget -qO- "https://download.docker.com/linux/${DISTRIB_ID,,}/gpg" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt install docker-ce docker-ce-cli containerd.io apparmor -y
 
+    printGreen "Встановлюємо Docker Compose"
+    docker_compose_version=$(wget -qO- https://api.github.com/repos/docker/compose/releases/latest | jq -r ".tag_name")
+    sudo wget -O /usr/bin/docker-compose "https://github.com/docker/compose/releases/download/${docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)"
+    sudo chmod +x /usr/bin/docker-compose
+    docker-compose -v
+
+    printGreen "Встановлюємо ноду"
+    curl -O https://gitlab.com/shardeum/validator/dashboard/-/raw/main/installer.sh && chmod +x installer.sh && ./installer.sh
+
+    status_output=$(docker exec -it shardeum-dashboard operator-cli status) && sleep 3
+    if [[ $status_output == *"state: standby"* ]] || [[ $status_output == *"state: stopped"* ]]; then
+        printGreen "Нода встановлена успішно"
+        printGreen "Відкрийте свій браузер, перейдіть до Дашборду, запустіть ноду та зробіть стейкінг токенів"
+    else
+        printGreen "Помилка при встановленні ноди, спочатку видаліть її та встановіть ще раз."
+    fi
 }
 
-logo
 install
-touch $HOME/.sdd_Shardeum_do_not_remove
-logo
