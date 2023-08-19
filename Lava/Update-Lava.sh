@@ -9,7 +9,7 @@ function logo {
 }
 
 function update {
-  printGreen "Розпочалось оновлення Lava Node,актуальна версія мережі: Testnet2" && sleep 1
+  printGreen "Розпочалось оновлення Lava Node,актуальна версія мережі: Testnet2 version: v0.21.1.2" && sleep 1
   printGreen "Зупинка Lava node"
   sudo systemctl stop lavad && sleep 3
   printGreen "Backup файлів: priv_validator.key.json,node_key.json до новоствореної папки  /root/lavabackupfiles/"
