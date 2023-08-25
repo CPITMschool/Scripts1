@@ -23,7 +23,7 @@ function update {
   wget -O $HOME/.lava/config/genesis.json "https://raw.githubusercontent.com/lavanet/lava-config/main/testnet-2/genesis_json/genesis.json" && sleep 1
   sleep 5
   printGreen "Оновлюємо Binary Version Lava"
-  cd $HOME/lava
+  cd $HOME/.lava
   git pull
   git checkout v0.21.1.2
   make install
@@ -31,10 +31,12 @@ function update {
 
   printGreen "Оновлення файлів config.toml та client.toml..."
 
-  peers=""
-  sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.lava/config/config.toml
-  seeds="3a445bfdbe2d0c8ee82461633aa3af31bc2b4dc0@testnet2-seed-node.lavanet.xyz:26656,e593c7a9ca61f5616119d6beb5bd8ef5dd28d62d@testnet2-seed-node2.lavanet.xyz:26656"
-  sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.lava/config/config.toml
+sudo sed -i 's/pprof_laddr = "0\.0\.0\.0:6060"/pprof_laddr = "0\.0\.0\.0:6160"/' $HOME/.lava/config/config.toml
+sudo sed -i 's/laddr = "tcp:\/\/0\.0\.0\.0:26657"/laddr = "tcp:\/\/0\.0\.0\.0:16657"/' $HOME/.lava/config/config.toml
+sudo sed -i 's/address = "tcp:\/\/0\.0\.0\.0:1317"/address = "tcp:\/\/0\.0\.0\.0:1327"/' "$HOME/.lava/config/app.toml"
+sudo sed -i -e "s|address = \"0.0.0.0:9090\"|address = \"0.0.0.0:19090\"|; s|address = \"0.0.0.0:9091\"|address = \"0.0.0.0:19091\"|" $HOME/.lava/config/app.toml
+sudo sed -i 's|laddr = "tcp://0.0.0.0:26656"|laddr = "tcp://0.0.0.0:16656"|' $HOME/.lava/config/config.toml
+
 
   sed -i \
     -e 's/timeout_commit = ".*"/timeout_commit = "30s"/g' \
@@ -47,11 +49,17 @@ function update {
     -e 's/skip_timeout_commit = ".*"/skip_timeout_commit = false/g' \
     $HOME/.lava/config/client.toml
 
+  printGreen "Завантажуємо снепшот для прискорення синхронізації"
+    SNAP_NAME=$(curl -s https://snapshots1-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
+    curl "https://snapshots1-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
+
+
   printGreen "Файли config.toml та client.toml успішно оновлено" && sleep 1
   printGreen "Запускаємо Lava Node..." && sleep 1
   systemctl restart lavad && sleep 5
   printGreen "Ноду успішно оновлено. Мережа Testnet2. version: v0.21.1.2" && sleep 3
   printGreen "Запускаємо журнал логів..." && sleep 3
+  printGreen "Спочатку ви можете побачити помилку Connection is closed, через 10-15 секунд нода розпочне свою роботу."
   journalctl -u lavad -f -o cat 
 }
 
