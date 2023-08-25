@@ -79,7 +79,7 @@ sudo systemctl start lavad && sleep 5
 
 printDelimiter
 printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
-printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo.catching_up"
+printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
 printGreen "Порти які використовує ваша нода: 16656,16657,6160,1327,19090,19091"
 printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
 printDelimiter
