@@ -11,65 +11,23 @@ function printGreen {
 logo
 
 function update() {
-printGreen "Видалення застарілої версії мережі Subspace Gemini 3e" && sleep 2
-sudo systemctl stop subspaced 
-sudo systemctl disable subspaced
-sudo rm -rf ~/.local/share/subspace*
-sudo rm -rf /etc/systemd/system/subspace*
-sudo rm -rf /usr/local/bin/subspace*
-  
-printGreen "Розпочалось встановлення Subpsace Gemini 3f"
-exists()
-{
-  command -v "$1" >/dev/null 2>&1
-}
-if exists curl; then
-	echo ''
-else
-  sudo apt update && sudo apt install curl -y < "/dev/null"
-fi
-bash_profile=$HOME/.bash_profile
-if [ -f "$bash_profile" ]; then
-    . $HOME/.bash_profile
-fi
+printGreen "Видалення застарілих файлів Subspace Gemini 3f v.0.6.0" && sleep 2
+echo -e "y\nn\ny\nn" | sudo /usr/local/bin/pulsar wipe
 
-sudo apt update && sudo apt install ocl-icd-opencl-dev libopencl-clang-dev libgomp1 -y
+printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.4"
 cd $HOME
-wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.0-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.0-alpha
+wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.4-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.4-alpha
 sudo chmod +x pulsar
 sudo mv pulsar /usr/local/bin/
 sudo rm -rf $HOME/.config/pulsar
 /usr/local/bin/pulsar init
-#systemctl stop subspaced subspaced-farmer &>/dev/null
-#rm -rf ~/.local/share/subspace*
-
-#source ~/.bash_profile
-sleep 1
-
-echo "[Unit]
-Description=Subspace Node
-After=network.target
-
-[Service]
-User=$USER
-Type=simple
-ExecStart=/usr/local/bin/pulsar farm --verbose
-Restart=on-failure
-LimitNOFILE=1024000
-
-[Install]
-WantedBy=multi-user.target" > $HOME/subspaced.service
-
-sudo mv $HOME/subspaced.service /etc/systemd/system/
-sudo systemctl restart systemd-journald
-sudo systemctl daemon-reload
-sudo systemctl enable subspaced
 sudo systemctl restart subspaced
+sleep 1
 
 if [[ `service subspaced status | grep active` =~ "running" ]]; then
 echo ""
   echo "=================================================="
-  printGreen "Subspace Gemini 3f успішно встановлено"
+  printGreen "Subspace Gemini 3f v0.6.4 успішно встановлено"
   echo ""
   printGreen "Корисні команди:"
   echo "Перевірити статус ноди - systemctl status subspaced"
@@ -84,7 +42,7 @@ touch $HOME/.sdd_Subspace_do_not_remove
 
 }
 
-printGreen "Під час встановлення ваша нода видалиться та перевстановиться на актуальну мережу Gemini 3f. Ви згідні? (Y/N): "
+printGreen "Під час встановлення ваша нода оновиться на актуальну мережу Gemini 3f v.0.6.4. Ви згідні? (Y/N): "
 read choice
 
 if [[ "$choice" == "Y" || "$choice" == "y" ]]; then
