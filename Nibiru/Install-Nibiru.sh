@@ -1,78 +1,50 @@
 #!/bin/bash
 
-function logo() {
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
 }
 
-function install() {
+function logo {
+  bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+}
+
 function printDelimiter {
   echo "==========================================="
 }
 
-function printGreen {
-  echo -e "\e[1m\e[32m${1}\e[0m"
-}
-source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Ports.sh) && sleep 1
-export -f selectPortSet && selectPortSet
+function install() {
+clear
+logo
 
-read -r -p "Enter node moniker: " NODE_MONIKER
+printGreen "Введіть ім'я для вашої ноди:"
+read -r NODE_MONIKER
 
 CHAIN_ID="nibiru-itn-1"
 CHAIN_DENOM="unibi"
 BINARY_NAME="nibid"
 BINARY_VERSION_TAG="v0.19.2"
 
-printDelimiter
-echo -e "Node moniker:       $NODE_MONIKER"
-echo -e "Chain id:           $CHAIN_ID"
-echo -e "Chain demon:        $CHAIN_DENOM"
-echo -e "Binary version tag: $BINARY_VERSION_TAG"
-printDelimiter && sleep 1
-
 source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Dependencies.sh)
 
-echo "" && printGreen "Building binaries..." && sleep 1
-
-cd $HOME || return
+cd || return
 rm -rf nibiru
 git clone https://github.com/NibiruChain/nibiru
-cd $HOME/nibiru || return
+cd nibiru || return
 git checkout v0.19.2
 make install
 nibid version # v0.19.2
 
-nibid config keyring-backend os
+nibid config keyring-backend test
 nibid config chain-id $CHAIN_ID
 nibid init "$NODE_MONIKER" --chain-id $CHAIN_ID
 
-curl -s https://snapshots-testnet.stake-town.com/nibiru/genesis.json > $HOME/.nibid/config/genesis.json
-curl -s https://snapshots-testnet.stake-town.com/nibiru/addrbook.json > $HOME/.nibid/config/addrbook.json
+printGreen "Завантажуємо addrbook та genesis.json..." && sleep 1
+curl -s https://rpc.itn-1.nibiru.fi/genesis | jq -r .result.genesis > $HOME/.nibid/config/genesis.json
+curl -s https://snapshots-testnet.nodejumper.io/nibiru-testnet/addrbook.json > $HOME/.nibid/config/addrbook.json
 
-CONFIG_TOML=$HOME/.nibid/config/config.toml
-PEERS=""
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $CONFIG_TOML
-SEEDS="a431d3d1b451629a21799963d9eb10d83e261d2c@seed-1.itn-1.nibiru.fi:26656,6a78a2a5f19c93661a493ecbe69afc72b5c54117@seed-2.itn-1.nibiru.fi:26656"
-sed -i.bak -e "s/^seeds =.*/seeds = \"$SEEDS\"/" $CONFIG_TOML
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:30658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:30657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:6460\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:30656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":30660\"%" $HOME/.nibid/config/config.toml && sed -i.bak -e "s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:9490\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:9491\"%; s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:1717\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:8945\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:8946\"%; s%^address = \"127.0.0.1:8545\"%address = \"127.0.0.1:8945\"%; s%^ws-address = \"127.0.0.1:8546\"%ws-address = \"127.0.0.1:8946\"%" $HOME/.nibid/config/app.toml && sed -i.bak -e "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:30657\"%" $HOME/.nibid/config/client.toml 
 
-APP_TOML=$HOME/.nibid/config/app.toml
-sed -i 's|^pruning *=.*|pruning = "custom"|g' $APP_TOML
-sed -i 's|^pruning-keep-recent  *=.*|pruning-keep-recent = "100"|g' $APP_TOML
-sed -i 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|g' $APP_TOML
-sed -i 's|^pruning-interval *=.*|pruning-interval = "19"|g' $APP_TOML
-sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $CONFIG_TOML
-indexer="null"
-sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $CONFIG_TOML
-sed -i 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.025unibi"|g' $APP_TOML
-
-# Customize ports
-CLIENT_TOML=$HOME/.nibid/config/client.toml
-sed -i.bak -e "s/^external_address *=.*/external_address = \"$(wget -qO- eth0.me):$PORT_PPROF_LADDR\"/" $CONFIG_TOML
-sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:$PORT_PROXY_APP\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:$PORT_RPC\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:$PORT_P2P\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:$PORT_PPROF_LADDR\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":$PORT_PROMETHEUS\"%" $CONFIG_TOML && \
-sed -i.bak -e "s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:$PORT_GRPC\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:$PORT_GRPC_WEB\"%; s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:$PORT_API\"%" $APP_TOML && \
-sed -i.bak -e "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:$PORT_RPC\"%" $CLIENT_TOML
-
-printGreen "Starting service and synchronization..." && sleep 1
-
+source $HOME/.bash_profile
 sudo tee /etc/systemd/system/nibid.service > /dev/null << EOF
 [Unit]
 Description=Nibiru Node
@@ -89,22 +61,23 @@ EOF
 
 nibid tendermint unsafe-reset-all --home $HOME/.nibid --keep-addr-book
 
-# Add snapshot here
-URL="https://snapshots-testnet.stake-town.com/nibiru/nibiru-itn-1_latest.tar.lz4"
-curl $URL | lz4 -dc - | tar -xf - -C $HOME/.nibid
+printGreen "Завантажуємо снепшот для прискорення синхронізації ноди..." && sleep 1
+SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/nibiru-testnet/info.json | jq -r .fileName)
+curl "https://snapshots-testnet.nodejumper.io/nibiru-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C $HOME/.nibid
+
+
 
 sudo systemctl daemon-reload
 sudo systemctl enable nibid
 sudo systemctl start nibid
 
 printDelimiter
-printGreen "Check logs:            sudo journalctl -u $BINARY_NAME -f -o cat"
-printGreen "Check synchronization: $BINARY_NAME status 2>&1 | jq .SyncInfo.catching_up"
+printGreen "Переглянути журнал логів:         sudo journalctl -u nibid -f -o cat"
+printGreen "Переглянути статус синхронізації: nibid status 2>&1 | jq .SyncInfo"
+printGreen "Порти які використовує ваша нода: 30658,30657,6460,30656,30660,9490,9491,1717,8945,8946,8945,8946"
+printGreen "В журналі логів спочатку ви можете побачити INF Dialing peer address=. Але за 5-15 секунд нода розпочне синхронізацію"
 printDelimiter
 
 }
 
-logo
 install
-touch $HOME/.sdd_Nibiru_do_not_remove
-logo
