@@ -38,5 +38,4 @@ printGreen  "Нода оновлена і запущена"
 printGreen "Перевірити версію ноди: docker exec -it pathfinder-starknet-node-1 pathfinder -V"
 echo "==========================================="
 }
-
 update
