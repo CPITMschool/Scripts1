@@ -35,9 +35,8 @@ docker-compose up -d
 echo ""
 echo "==========================================="
 printGreen  "Нода оновлена і запущена"
-Перевірити версію ноди: docker exec -it pathfinder-starknet-node-1 pathfinder -V
+printGreen "Перевірити версію ноди: docker exec -it pathfinder-starknet-node-1 pathfinder -V"
 echo "==========================================="
 }
 
 update
-logo
