@@ -11,7 +11,7 @@ function printGreen {
 logo
 
 function update() {
-printGreen "Видалення застарілих файлів Subspace Gemini 3f v.0.6.0" && sleep 2
+printGreen "Видалення застарілих файлів Subspace Gemini 3f" && sleep 2
 echo -e "y\nn\ny\nn" | sudo /usr/local/bin/pulsar wipe
 
 printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.5"
