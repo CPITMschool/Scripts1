@@ -14,7 +14,7 @@ gear_path=$(find /root -name "gear" -type f)
 gear_version=$($gear_path --version)
 printGreen "Версія вашої ноди Gear - $gear_version"
 
-printGreen "Актуальна версія для оновлення 0.2.1. Бажаєте оновити? (Y/N)"
+printGreen "Актуальна версія для оновлення 0.3.1. Бажаєте оновити? (Y/N)"
 read response
 
 function update() {
@@ -23,10 +23,11 @@ function update() {
         printGreen "Розпочалось оновлення вашої ноди"
         echo "==================================================="
         cd
+        sudo systemctl stop gear
+        
         printGreen "Завантаження нової версії на ваш сервер"
-        wget https://get.gear.rs/gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz
-        sudo tar -xvf gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz -C /root
-        rm gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz
+       curl https://get.gear.rs/gear-v0.3.1-x86_64-unknown-linux-gnu.tar.xz | sudo tar -xJC /root
+
 
         sudo systemctl stop gear
         /root/gear purge-chain -y && sleep 3
@@ -53,7 +54,7 @@ function update() {
         gear_path=$(find /root -name "gear" -type f)
         updated_gear_version=$($gear_path --version)
         printGreen "Оновлення Gear до версії $updated_gear_version завершено."
-        printGreen "Перевірити поточну версію вашої ноди ви можете командою - ./gear --version , або ж у меню logs, update. "
+        printGreen "Перевірити поточну версію вашої ноди ви можете командою - ./gear --version . "
     else
         printGreen "Оновлення Gear не виконано.Спробуйте ще раз."
     fi

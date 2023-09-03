@@ -57,9 +57,8 @@ function install() {
     source $HOME/.cargo/env &>/dev/null
     sleep 1
 
-    wget https://get.gear.rs/gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz &>/dev/null
-    tar xvf gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz &>/dev/null
-    rm gear-v0.2.1-x86_64-unknown-linux-gnu.tar.xz &>/dev/null
+   curl https://get.gear.rs/gear-v0.3.1-x86_64-unknown-linux-gnu.tar.xz | sudo tar -xJC /root
+
     chmod +x $HOME/gear &>/dev/null
 
     sudo tee /etc/systemd/journald.conf >/dev/null << EOF
