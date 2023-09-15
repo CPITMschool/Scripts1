@@ -14,9 +14,9 @@ function update() {
 printGreen "Видалення застарілих файлів Subspace Gemini 3f" && sleep 2
 echo -e "y\nn\ny\nn" | sudo /usr/local/bin/pulsar wipe
 
-printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.5"
+printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.8"
 cd $HOME
-wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.5-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.5-alpha
+wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.8-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.8-alpha
 sudo chmod +x pulsar
 sudo mv pulsar /usr/local/bin/
 sudo rm -rf $HOME/.config/pulsar
@@ -27,7 +27,7 @@ sleep 1
 if [[ `service subspaced status | grep active` =~ "running" ]]; then
 echo ""
   echo "=================================================="
-  printGreen "Subspace Gemini 3f v0.6.5 успішно встановлено"
+  printGreen "Subspace Gemini 3f v0.6.8 успішно встановлено"
   echo ""
   printGreen "Корисні команди:"
   echo "Перевірити статус ноди - systemctl status subspaced"
@@ -42,7 +42,7 @@ touch $HOME/.sdd_Subspace_do_not_remove
 
 }
 
-printGreen "Під час встановлення ваша нода оновиться на актуальну мережу Gemini 3f v.0.6.5. Ви згідні? (Y/N): "
+printGreen "Під час встановлення ваша нода оновиться на актуальну мережу Gemini 3f v.0.6.8. Ви згідні? (Y/N): "
 read choice
 
 if [[ "$choice" == "Y" || "$choice" == "y" ]]; then
