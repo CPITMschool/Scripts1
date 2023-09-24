@@ -4,6 +4,14 @@ function logo() {
     bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 }
 
+function printDelimiter {
+  echo "==========================================="
+}
+
+function printGreen {
+  echo -e "\e[1m\e[32m${1}\e[0m"
+}
+
 function install() {
     sudo apt --fix-broken install
     sudo apt-get update && sudo apt-get upgrade -y
@@ -35,6 +43,11 @@ function install() {
 if [ ! -f $HOME/.sdd_Meson_do_not_remove ]; then
   logo
 fi
+
+printDelimiter
+printGreen "Переглянути роботу вашої ноди ви можете в дашборді, який створювали в розділі Daily Reward"
+printGreen "Порти які використовує ваша нода: 443"
+printDelimiter
 
 install
 touch $HOME/.sdd_Meson_do_not_remove
