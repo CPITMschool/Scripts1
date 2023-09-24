@@ -63,6 +63,7 @@ if [[ `service subspaced status | grep active` =~ "running" ]]; then
 echo ""
   echo "=================================================="
   printGreen "Subspace Gemini 3f успішно встановлено"
+  printGreen "Порти які використовує ваша нода:  30333,30433,30533"
   echo ""
   printGreen "Корисні команди:"
   echo "Перевірити статус ноди - systemctl status subspaced"
