@@ -8,6 +8,10 @@ function printGreen {
     echo -e "\033[1;32m${1}\033[0m"
 }
 
+function printDelimiter {
+  echo "==========================================="
+}
+
 clear
 logo
 
@@ -34,8 +38,11 @@ function install() {
 
     status_output=$(docker exec -it shardeum-dashboard operator-cli status) && sleep 3
     if [[ $status_output == *"state: standby"* ]] || [[ $status_output == *"state: stopped"* ]]; then
+        printDelimiter
         printGreen "Нода встановлена успішно"
         printGreen "Відкрийте свій браузер, перейдіть до Дашборду, запустіть ноду та зробіть стейкінг токенів"
+        Порт який використовує нода: 8080"
+        printDelimiter
     else
         printGreen "Помилка при встановленні ноди, спочатку видаліть її та встановіть ще раз."
     fi
