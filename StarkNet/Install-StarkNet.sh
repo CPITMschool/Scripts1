@@ -18,7 +18,7 @@ read -p "Enter your Alchemy link (example: https://eth-goerli.alchemyapi.io/v2/s
 sleep 1
 echo 'export ALCHEMY_KEY='$ALCHEMY_KEY >> $HOME/.bash_profile
 
-"Install dependencies"
+printGreen "Install dependencies"
 sudo apt update
 sudo apt install mc wget curl git htop net-tools unzip jq build-essential ncdu tmux -y
 
