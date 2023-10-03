@@ -12,20 +12,6 @@ function printDelimiter {
   echo "==========================================="
 }
 
-function backup_files() {
-    source_dir="/root/.nibid/"
-    backup_dir="/root/BACKUPNODES/Nibiru backup"
-    files_to_copy=("config/priv_validator_key.json" "config/node_key.json" "data/priv_validator_state.json")
-    printGreen "Копіюємо файли ноди Nibiru в папку резервних копій" && sleep 3
-    mkdir -p "$backup_dir"
-    for file_to_copy in "${files_to_copy[@]}"; do
-        if [ -f "$source_dir/$file_to_copy" ]; then
-            cp "$source_dir/$file_to_copy" "$backup_dir/" || { printRed "Не вдалось скопіювати файли ноди Nibiru"; return; }
-        fi
-    done
-    echo "Збережено файли ноди Nibiru" && sleep 3
-}
-
 function remove_node() {
     printDelimiter
     printGreen "Видаляємо застарілу версію Nibiru" && sleep 3
@@ -121,17 +107,20 @@ printDelimiter
 
 }
 
-function restore_files() {
-    printGreen "Переносимо бекап файли в нову версію ноди Nibiru" && sleep 3
-    printGreen "Бекап файли Nibiru перенесено" && sleep 2 
-    printGreen "Вам залишилось тільки відновити ваш гаманець за допомогою мнемонічної фрази, командою: nibid keys add wallet --recover"
-    restore_dir="$HOME/BACKUPNODES"
-    cp "$restore_dir/Nibiru backup/priv_validator_state.json" "$HOME/.nibid/data/"
-    cp "$restore_dir/Nibiru backup/node_key.json" "$HOME/.nibid/config/"
-    cp "$restore_dir/Nibiru backup/priv_validator_key.json" "$HOME/.nibid/config/"
+function backup_files() {
+    source_dir="/root/.nibid/"
+    backup_dir="/root/BACKUPNODES/Nibiru backup"
+    files_to_copy=("config/priv_validator_key.json" "config/node_key.json" "data/priv_validator_state.json")
+    printGreen "Копіюємо файли ноди Nibiru в папку резервних копій" && sleep 3
+    mkdir -p "$backup_dir"
+    for file_to_copy in "${files_to_copy[@]}"; do
+        if [ -f "$source_dir/$file_to_copy" ]; then
+            cp "$source_dir/$file_to_copy" "$backup_dir/" || { printRed "Не вдалось скопіювати файли ноди Nibiru"; return; }
+        fi
+    done
+    echo "Збережено файли ноди Nibiru" && sleep 3
 }
 
-backup_files
 remove_node
 install
-restore_files
+backup_files
