@@ -1,7 +1,5 @@
 #!/bin/bash
 
-function install() {
-clear
 function printDelimiter {
   echo "==========================================="
 }
@@ -10,7 +8,10 @@ function printGreen {
   echo -e "\e[1m\e[32m${1}\e[0m"
 }
 
+function install() {
+clear
 source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+
 
 printGreen "Введіть ім'я для вашої ноди:"
 read -r MONIKER
@@ -30,7 +31,7 @@ cd $HOME
 rm -rf lava
 git clone https://github.com/lavanet/lava.git
 cd lava
-git checkout v0.23.5
+git checkout v0.24
 
 export LAVA_BINARY=lavad
 make build
