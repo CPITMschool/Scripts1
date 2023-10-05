@@ -13,7 +13,7 @@ logo
 function update() {
 printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.13"
 cd $HOME
-wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.11-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.11-alpha
+wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.13-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.13-alpha
 sudo chmod +x pulsar
 sudo mv pulsar /usr/local/bin/
 sudo rm -rf $HOME/.config/pulsar
