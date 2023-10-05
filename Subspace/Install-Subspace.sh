@@ -11,7 +11,7 @@ function printGreen {
 logo
 
 function install() {
-printGreen "Розпочалось встановлення Subpsace Gemini 3f v0.6.11"
+printGreen "Розпочалось встановлення Subpsace Gemini 3f v0.6.13"
 exists()
 {
   command -v "$1" >/dev/null 2>&1
@@ -62,7 +62,7 @@ sudo systemctl restart subspaced
 if [[ `service subspaced status | grep active` =~ "running" ]]; then
 echo ""
   echo "=================================================="
-  printGreen "Subspace Gemini 3f успішно встановлено"
+  printGreen "Subspace Gemini 3f v0.6.13 успішно встановлено"
   printGreen "Порти які використовує ваша нода:  30333,30433,30533"
   echo ""
   printGreen "Корисні команди:"
