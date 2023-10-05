@@ -11,7 +11,7 @@ function printGreen {
 logo
 
 function update() {
-printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.11"
+printGreen "Розпочалось встановлення Subpsace Gemini 3f v.0.6.13"
 cd $HOME
 wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.11-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.11-alpha
 sudo chmod +x pulsar
@@ -39,7 +39,7 @@ touch $HOME/.sdd_Subspace_do_not_remove
 
 }
 
-printGreen "Під час встановлення ваша нода оновиться на актуальну мережу Gemini 3f v.0.6.11. Ви згідні? (Y/N): "
+printGreen "Під час встановлення ваша нода оновиться на актуальну мережу Gemini 3f v.0.6.13. Ви згідні? (Y/N): "
 read choice
 
 if [[ "$choice" == "Y" || "$choice" == "y" ]]; then
