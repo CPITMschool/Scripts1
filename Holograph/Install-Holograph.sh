@@ -18,8 +18,14 @@ function install() {
 
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
-  sudo apt-get install nodejs -y
+  sudo apt install git
+  curl -o node-v20.8.0-linux-x64.tar.xz https://nodejs.org/download/release/latest-v20.x/node-v20.8.0-linux-x64.tar.xz
+  tar -xvf node-v20.8.0-linux-x64.tar.xz
+  cd node-v20.8.0-linux-x64
+  sudo cp -R * /usr/local/
   sudo apt-get install -f
+  sudo apt install screen
+  
 
   echo ""
   printGreen "Встановлення Holograph..."
