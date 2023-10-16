@@ -34,7 +34,7 @@ git checkout $VER
 source $HOME/.bash_profile
 echo "PATHFINDER_ETHEREUM_API_URL=$ALCHEMY_KEY" > pathfinder-var.env
 
-"Spin up node"
+
 docker compose pull
 mkdir -p $HOME/pathfinder/pathfinder
 chown -R 1000.1000 .
