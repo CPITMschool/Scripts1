@@ -22,7 +22,7 @@ printGreen "Install dependencies"
 sudo apt update
 sudo apt install mc wget curl git htop net-tools unzip jq build-essential ncdu tmux -y
 
-orintGreen "Install docker and docker compose"
+PrintGreen "Install docker and docker compose"
 bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/StarkNet/docker-install.sh)
 
 git clone https://github.com/eqlabs/pathfinder.git
