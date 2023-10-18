@@ -100,8 +100,8 @@ lavad config node tcp://localhost:14457
 
 lavad init $MONIKER --chain-id lava-testnet-2
 
-curl -Ls https://snapshots.kjnodes.com/lava-testnet/genesis.json > $HOME/.lava/config/genesis.json
-curl -Ls https://snapshots.kjnodes.com/lava-testnet/addrbook.json > $HOME/.lava/config/addrbook.json
+curl -s https://raw.githubusercontent.com/lavanet/lava-config/main/testnet-2/genesis_json/genesis.json > $HOME/.lava/config/genesis.json
+curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/addrbook.json > $HOME/.lava/config/addrbook.json
 
 sed -i -e "s|^seeds *=.*|seeds = \"3f472746f46493309650e5a033076689996c8881@lava-testnet.rpc.kjnodes.com:14459\"|" $HOME/.lava/config/config.toml
 
@@ -129,8 +129,8 @@ sed -i \
   $HOME/.lava/config/config.toml
 
 printGreen "Завантажуємо снепшот для прискорення синхронізації ноди"
-curl -L https://snapshots.kjnodes.com/lava-testnet/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.lava
-[[ -f $HOME/.lava/data/upgrade-info.json ]] && cp $HOME/.lava/data/upgrade-info.json $HOME/.lava/cosmovisor/genesis/upgrade-info.json
+SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
+curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
 
 printGreen "Запускаємо ноду"
 sudo systemctl start lavad && sleep 3
