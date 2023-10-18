@@ -31,7 +31,7 @@ cd $HOME
 rm -rf lava
 git clone https://github.com/lavanet/lava.git
 cd lava
-git checkout v0.24.0
+git checkout v0.25.2
 
 export LAVA_BINARY=lavad
 make build
