@@ -22,7 +22,7 @@ read -r NODE_MONIKER
 CHAIN_ID="nibiru-itn-3"
 CHAIN_DENOM="unibi"
 BINARY_NAME="nibid"
-BINARY_VERSION_TAG="v0.21.10"
+BINARY_VERSION_TAG="v0.21.11"
 
 source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Nibiru/Dependencies.sh)
 
@@ -35,7 +35,7 @@ git clone https://github.com/NibiruChain/nibiru
 cd $HOME/nibiru || return
 git checkout $BINARY_VERSION_TAG
 make install
-nibid version # 0.21.10
+nibid version # 0.21.11
 
 nibid config keyring-backend os
 nibid config chain-id $CHAIN_ID
