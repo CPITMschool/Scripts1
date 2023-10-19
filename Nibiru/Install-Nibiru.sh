@@ -86,6 +86,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable nibid
 sudo systemctl start nibid
 
+source ~/.bashrc
+source ~/.bash_profile
+
+
 printDelimiter
 printGreen "Переглянути журнал логів:         sudo journalctl -u nibid -f -o cat"
 printGreen "Переглянути статус синхронізації: nibid status 2>&1 | jq .SyncInfo"
