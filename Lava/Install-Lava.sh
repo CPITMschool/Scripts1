@@ -91,6 +91,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable lavad
 sudo systemctl start lavad
 
+source ~/.bashrc
+source ~/.bash_profile
+
+
 printDelimiter
 printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
 printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
