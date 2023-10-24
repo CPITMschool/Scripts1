@@ -19,14 +19,7 @@ function install() {
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
   sudo apt install git
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
-  sleep 3
-  nvm install --lts
-  nvm install stable
-  sudo apt-get install -f
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && source ~/.nvm/nvm.sh && nvm install 18.18.2
   sudo apt install screen
   
 
