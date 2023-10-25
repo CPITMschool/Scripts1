@@ -19,7 +19,10 @@ function install() {
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
   sudo apt install git
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && source ~/.nvm/nvm.sh && nvm install 18.18.2
+  sudo apt install nodejs
+  export PATH="$PATH:/usr/bin/nodejs"
+  nvm install 18.18.2
+  nvm use 18.18.2
   sudo apt install screen
   
 
