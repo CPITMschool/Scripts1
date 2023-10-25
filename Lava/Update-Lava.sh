@@ -14,7 +14,7 @@ function backup_files() {
   backup_dir="$HOME/BACKUPNODES"
   sub_dir="$backup_dir/Lava backup"
   
-  # Проверка и создание папки BACKUPNODES и подпапки Lava backup
+  
   mkdir -p "$sub_dir"
   
   cp "$HOME/.lava/data/priv_validator_state.json" "$sub_dir/"
