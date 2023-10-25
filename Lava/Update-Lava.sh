@@ -12,12 +12,13 @@ function backup_files() {
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
   printGreen "Копіюємо бекап файли ноди Lava в папку /root/BACKUPNODES/Lava backup" && sleep 3
   backup_dir="$HOME/BACKUPNODES"
-  sub_dir="$backup_dir/Lava backup"
+  timestamp=$(date +'%d.%m.%y %H:%M')  
+  sub_dir="$backup_dir/Lava backup/$timestamp"
   mkdir -p "$sub_dir"
   cp "$HOME/.lava/data/priv_validator_state.json" "$sub_dir/"
   cp "$HOME/.lava/config/node_key.json" "$sub_dir/"
   cp "$HOME/.lava/config/priv_validator_key.json" "$sub_dir/" 
-  echo "Збережено: $lava_file_to_copy" && sleep 3
+  echo "Збережено $lava_file_to_copy" && sleep 3
 } 
 
 
