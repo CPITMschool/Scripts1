@@ -23,6 +23,7 @@ function install() {
   export PATH="$PATH:/usr/bin/nodejs"
   nvm install 18.18.2
   nvm use 18.18.2
+  source ~/.bashrc
   sudo apt install screen
   
 
