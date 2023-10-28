@@ -19,13 +19,14 @@ function install() {
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
   sudo apt install git
-  sudo apt install nodejs
-  export PATH="$PATH:/usr/bin/nodejs"
-  nvm install 18.18.2
-  nvm use 18.18.2
+  rm -rf ~/.nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   source ~/.bashrc
+  nvm install 20.9.0
+  nvm use 20.9.0
   sudo apt install screen
-  
 
   echo ""
   printGreen "Встановлення Holograph..."
@@ -56,7 +57,6 @@ function done2() {
   printGreen "Поверніться до гайду, там буде більш детальна інструкція з поясненням" && sleep 10
  screen -S holograph bash -c 'sleep 2 && holograph operator:bond && printGreen "Нажимаємо Y - та створюємо бондинг у будь-якій з запропонованих мереж"'
 }
-
 
 clear
 logo
