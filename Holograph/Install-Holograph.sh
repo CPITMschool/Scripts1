@@ -18,14 +18,12 @@ function install() {
 
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
-  sudo apt install git
-  rm -rf ~/.nvm
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  source ~/.bashrc
-  nvm install 20.9.0
-  nvm use 20.9.0
+  sudo apt install git -y
+  sudo apt remove nodejs -y
+  sudo apt remove npm -y
+  sudo apt install snapd -y
+  sudo snap install node --classic
+  source ~/.bashrc && sleep 2
   sudo apt install screen
 
   echo ""
