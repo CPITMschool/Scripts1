@@ -34,7 +34,7 @@ function install() {
   rm -rf lava
   git clone https://github.com/lavanet/lava
   cd lava || return
-  git checkout v0.25.2
+  git checkout v0.26.1
   make install
 
   lavad config keyring-backend test
