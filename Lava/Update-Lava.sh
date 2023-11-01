@@ -11,7 +11,7 @@ function printGreen {
 function install() {
   clear
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
-  printGreen "Оновлюємо до версії v0.26.1"
+  printGreen "Оновлюємо до версії v0.26.1 "
   echo ""
   sudo systemctl stop lavad
 
