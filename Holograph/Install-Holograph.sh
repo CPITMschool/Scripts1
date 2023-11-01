@@ -27,8 +27,6 @@ function install() {
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
   nvm install node
   npm update -g
-
-
   source ~/.bashrc && sleep 2
   sudo apt install screen
 
