@@ -21,11 +21,13 @@ function install() {
   sudo apt -qy upgrade
 
   printGreen "Встановлення Go"
+  ver="1.19"
+  wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
   sudo rm -rf /usr/local/go
-  curl -Ls https://go.dev/dl/go1.20.8.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local
-  eval $(echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/golang.sh)
-  eval $(echo 'export PATH=$PATH:$HOME/go/bin' | tee -a $HOME/.profile)
-  source .bash_profile
+  sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+  rm "go$ver.linux-amd64.tar.gz"
+  echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile
+  source $HOME/.bash_profile
 
   printGreen "Встановлення Lava"
   export LAVA_BINARY=lavad
@@ -45,10 +47,10 @@ function install() {
   curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/addrbook.json > $HOME/.lava/config/addrbook.json
 
   sed -i.bak -e "s%proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:17658\"%" \
-  -e "s%laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:17656\"%" \
-  -e "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:17657\"%" \
-  -e "s%pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:1760\"%" \
-  -e "s%prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":17660\"%" $HOME/.lava/config/config.toml
+    -e "s%laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:17656\"%" \
+    -e "s%laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:17657\"%" \
+    -e "s%pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:1760\"%" \
+    -e "s%prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":17660\"%" $HOME/.lava/config/config.toml
 
   sed -i.bak -e "s%node = \"tcp://localhost:26657\"%node = \"tcp://localhost:17657\"%" $HOME/.lava/config/client.toml
 
@@ -97,20 +99,4 @@ EOF
 
   lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
 
-  printGreen "Завантажуємо снепшот для прискорення синхронізації ноди"
-  SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
-  curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
-  printGreen "Запускаємо ноду"
-  sudo systemctl daemon-reload
-  sudo systemctl enable lavad
-  sudo systemctl start lavad
-
-  printDelimiter
-  printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
-  printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
-  printGreen "Порти які використовує ваша нода: 17658,17657,17656,1760,17660,1790,1791,1717"
-  printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
-  printDelimiter
-}
-
-install
+  printGreen
