@@ -21,7 +21,6 @@ function install() {
   sudo apt -qy upgrade
 
   printGreen "Встановлення Go"
-  ver="1.19"
   wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
   sudo rm -rf /usr/local/go
   sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
