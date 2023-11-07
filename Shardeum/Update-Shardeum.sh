@@ -12,7 +12,7 @@ logo
 
 function update() {
   printGreen "Перед оновленням зайдіть до свого Дашборду зробіть анстейк токенів та зупиніть ноду."
-  printGreen "Актуальна версія для оновлення 1.7.1 Бажаєте оновити? (Y/N)"
+  printGreen "Якщо ви виконали ці дії,бажаєте оновити? (Y/N)"
   read response
 
   if [[ $response == "Y" || $response == "y" ]]; then
