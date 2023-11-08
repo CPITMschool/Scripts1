@@ -21,8 +21,8 @@ function install() {
 
     sudo ufw disable
     sudo ufw allow 443
-    wget 'https://staticassets.meson.network/public/meson_cdn/v3.1.19/meson_cdn-linux-amd64.tar.gz' && tar -zxf meson_cdn-linux-amd64.tar.gz && rm -f meson_cdn-linux-amd64.tar.gz && cd meson_cdn-linux-amd64 && sudo ./service install meson_cdn
-
+    wget 'https://staticassets.meson.network/public/meson_cdn/v3.1.20/meson_cdn-linux-amd64.tar.gz' && tar -zxf meson_cdn-linux-amd64.tar.gz && rm -f meson_cdn-linux-amd64.tar.gz && cd ./meson_cdn-linux-amd64 && sudo ./service install meson_cdn
+    
     if [[ -z "$tokencommand" ]]; then
         read -p "Please insert set token and config command from website: " _tokencommand
         export tokencommand=$_tokencommand
