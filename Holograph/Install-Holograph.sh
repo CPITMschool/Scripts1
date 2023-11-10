@@ -19,14 +19,6 @@ function install() {
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
   sudo apt install git -y
-  sudo apt remove nodejs -y
-  sudo apt remove npm -y
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
-  nvm install node
-  npm update -g
   source ~/.bashrc && sleep 2
   sudo apt install screen
 
