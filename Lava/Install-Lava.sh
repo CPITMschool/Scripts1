@@ -81,7 +81,7 @@ function install() {
 
   sed -i -e 'bcast_mode = ".*"/bcast_mode = "sync"/g' $HOME/.lava/config/config.toml
 
-  sudo tee /etc/systemd/system/lavad.service > /dev/null << EOF
+sudo tee /etc/systemd/system/lavad.service > /dev/null << EOF
 [Unit]
 Description=Lava Network Node
 After=network-online.target
@@ -95,22 +95,22 @@ LimitNOFILE=10000
 WantedBy=multi-user.target
 EOF
 
-  lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
+lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
 
-  printGreen "Завантажуємо снепшот для прискорення синхронізації ноди"
-  SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
-  curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
-  printGreen "Запускаємо ноду"
-  sudo systemctl daemon-reload
-  sudo systemctl enable lavad
-  sudo systemctl start lavad
+printGreen "Завантажуємо снепшот для прискорення синхронізації ноди"
+SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
+curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
+printGreen "Запускаємо ноду"
+sudo systemctl daemon-reload
+sudo systemctl enable lavad
+sudo systemctl start lavad
 
-  printDelimiter
-  printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
-  printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
-  printGreen "Порти які використовує ваша нода: 17658,17657,17656,1760,17660,1790,1791,1717"
-  printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
-  printDelimiter
+printDelimiter
+printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
+printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
+printGreen "Порти які використовує ваша нода: 17658,17657,17656,1760,17660,1790,1791,1717"
+printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
+printDelimiter
 }
 
 install
