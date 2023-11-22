@@ -36,7 +36,7 @@ echo ""
 echo "==========================================="
 printGreen  "Нода оновлена і запущена"
 printGreen "Перевірити версію ноди: docker exec -it pathfinder-starknet-node-1 pathfinder -V"
-printGreen "Або ж , якщо у вас назва контейнеру інша, тоді скористайтесь командою: docker exec -it pathfinder_starknet-node_1"
+printGreen "Або ж , якщо у вас назва контейнеру інша, тоді скористайтесь командою: docker exec -it pathfinder_starknet-node_1 pathfinder -V"
 echo "==========================================="
 }
 update
