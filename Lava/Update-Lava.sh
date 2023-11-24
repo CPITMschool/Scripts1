@@ -33,7 +33,6 @@ function install() {
   printDelimiter
   printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
   printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
-  printGreen "Порти які використовує ваша нода: 17658,17657,17656,1760,17660,1790,1791,1717"
   printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
   printDelimiter
 }
