@@ -69,7 +69,7 @@ function install() {
 
   sed -i -e 's/broadcast-mode = ".*"/broadcast-mode = "sync"/g' $HOME/.lava/config/config.toml
 
-  printCyan "5. Starting service and synchronization..." && sleep 1
+
 
   sudo tee /etc/systemd/system/lavad.service > /dev/null << EOF
 [Unit]
