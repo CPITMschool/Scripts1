@@ -1,106 +1,87 @@
 #!/bin/bash
 
-function logo() {
-    bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
+function printDelimiter {
+  echo "==========================================="
 }
 
 function printGreen {
-    echo -e "\e[1m\e[32m${1}\e[0m"
+  echo -e "\e[1m\e[32m${1}\e[0m"
 }
 
-logo
-
-if [ -f "$HOME/.gear_port" ]; then
-    PORT=$(cat "$HOME/.gear_port")
-else
-    if ss -tuln | grep -q ':31333\b'; then
-        PORT=31334
-    else
-        PORT=31333
-    fi
-    echo "$PORT" > "$HOME/.gear_port"
-fi
-
-if [ -z "$NODENAME_GEAR" ]; then
-    echo -e "\e[1m\e[32mВведіть ім'я для вашої ноди (тільки букви та цифри):\e[0m"
-    read -p "" NODENAME_GEAR
-    echo 'export NODENAME='"$NODENAME_GEAR" >> "$HOME"/.profile
-fi
-printGreen "Ім'я вашої ноди: $NODENAME_GEAR"
-sleep 1
-echo "==================================================="
-printGreen "Розпочалось встановлення Gear"
-echo "==================================================="
-
 function install() {
-    sudo apt update
-    sudo apt install ufw -y
-    sudo ufw allow 22:65535/tcp
-    sudo ufw allow 22:65535/udp
-    sudo ufw deny out from any to 10.0.0.0/8
-    #sudo ufw deny out from any to 172.16.0.0/12
-    sudo ufw deny out from any to 192.168.0.0/16
-    sudo ufw deny out from any to 100.64.0.0/10
-    sudo ufw deny out from any to 198.18.0.0/15
-    sudo ufw deny out from any to 169.254.0.0/16
-    sudo ufw --force enable
+  clear
+  source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
 
-    sudo apt update
-    sudo apt install curl make clang pkg-config libssl-dev build-essential git mc jq unzip wget -y
-    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y
-    source $HOME/.cargo/env
-    sleep 1
-    sudo apt install --fix-broken -y &>/dev/null
-    sudo apt install git mc clang curl jq htop net-tools libssl-dev llvm libudev-dev -y &>/dev/null
-    source $HOME/.profile &>/dev/null
-    source $HOME/.bashrc &>/dev/null
-    source $HOME/.cargo/env &>/dev/null
-    sleep 1
+  printGreen "Введіть ім'я для вашої ноди(Наприклад:Oliver):"
+  read -r NODE_MONIKER
 
-   curl https://get.gear.rs/gear-v0.3.1-x86_64-unknown-linux-gnu.tar.xz | sudo tar -xJC /root
+  CHAIN_ID="athens_7001-1"
+  CHAIN_DENOM="azeta"
+  BINARY_NAME="zetacored"
+  BINARY_VERSION_TAG="v10.1.0"
+  printGreen "Встановлення необхідних залежностей"
+  sudo apt update
+  sudo apt install -y make gcc jq curl git lz4 build-essential chrony unzip gzip
+  if ! [ -x "$(command -v go)" ]; then
+  source <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
+  source .bash_profile
+  fi
+  
+  printGreen "Встановлення Zetachain"
+  mkdir -p $HOME/go/bin
+  curl -L https://github.com/zeta-chain/node/releases/download/v10.1.0/zetacored_testnet-linux-amd64 > $HOME/go/bin/zetacored
+  chmod +x $HOME/go/bin/zetacored
 
-    chmod +x $HOME/gear &>/dev/null
+  zetacored config chain-id $CHAIN_ID
+  zetacored config keyring-backend test
+  zetacored init "$NODE_MONIKER" --chain-id $CHAIN_ID
 
-    sudo tee /etc/systemd/journald.conf >/dev/null << EOF
-Storage=persistent
-EOF
+  curl -L https://raw.githubusercontent.com/zeta-chain/network-athens3/main/network_files/config/genesis.json > $HOME/.zetacored/config/genesis.json
+curl -L https://snapshots-testnet.nodejumper.io/zetachain-testnet/addrbook.json > $HOME/.zetacored/config/addrbook.json
 
-    sudo tee /etc/systemd/system/gear.service >/dev/null << EOF
+SEEDS="3f472746f46493309650e5a033076689996c8881@zetachain-testnet.rpc.kjnodes.com:16059"
+PEERS=""
+sed -i 's|^seeds *=.*|seeds = "'$SEEDS'"|; s|^persistent_peers *=.*|persistent_peers = "'$PEERS'"|' $HOME/.zetacored/config/config.toml
+
+sed -i 's|^pruning *=.*|pruning = "custom"|g' $HOME/.zetacored/config/app.toml
+sed -i 's|^pruning-keep-recent  *=.*|pruning-keep-recent = "100"|g' $HOME/.zetacored/config/app.toml
+sed -i 's|^pruning-interval *=.*|pruning-interval = "10"|g' $HOME/.zetacored/config/app.toml
+sed -i 's|^snapshot-interval *=.*|snapshot-interval = 0|g' $HOME/.zetacored/config/app.toml
+sed -i 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.0001azeta"|g' $HOME/.zetacored/config/app.toml
+sed -i 's|^prometheus *=.*|prometheus = true|' $HOME/.zetacored/config/config.toml
+
+printCyan "5. Starting service and synchronization..." && sleep 1
+
+sudo tee /etc/systemd/system/zetacored.service > /dev/null << EOF
 [Unit]
-Description=Gear Node
-After=network.target
-
+Description=ZetaChain Node
+After=network-online.target
 [Service]
-Type=simple
 User=$USER
-WorkingDirectory=$HOME
-ExecStart=$HOME/gear \
-        --name $NODENAME_GEAR \
-        --execution wasm \
-        --port $PORT \
-        --telemetry-url 'ws://telemetry-backend-shard.gear-tech.io:32001/submit 0' \
-        --telemetry-url 'wss://telemetry.postcapitalist.io/submit 0'
-Restart=always
+ExecStart=$(which zetacored) start
+Restart=on-failure
 RestartSec=10
 LimitNOFILE=10000
-
+WorkingDirectory=$HOME
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    sudo systemctl restart systemd-journald &>/dev/null
-    sudo systemctl daemon-reload &>/dev/null
-    sudo systemctl enable gear &>/dev/null
-    sudo systemctl restart gear &>/dev/null
+zetacored tendermint unsafe-reset-all --home $HOME/.zetacored --keep-addr-book
 
-    echo "==================================================="
-    printGreen "Встановлення пройшло успішно"
-    echo "==================================================="
-    echo ""
-    echo "Корисні команди:"
-    printGreen "Перевірка журналу логів: journalctl -n 100 -f -u gear"
-    printGreen "Перевірка версії ноди: ./gear --version"
-    printGreen "Порт який використовується вашою нодою: $PORT"
+SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/zetachain-testnet/info.json | jq -r .fileName)
+curl "https://snapshots-testnet.nodejumper.io/zetachain-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.zetacored"
+
+  printGreen "Запускаємо ноду"
+  sudo systemctl daemon-reload
+sudo systemctl enable zetacored
+sudo systemctl start zetacored
+
+  printDelimiter
+  printGreen "Переглянути журнал логів:         sudo journalctl -u zetacored -f -o cat"
+  printGreen "Переглянути статус синхронізації: zetacored status 2>&1 | jq .SyncInfo"
+  printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
+  printDelimiter
 }
 
 install
