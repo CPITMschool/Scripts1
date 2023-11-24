@@ -11,7 +11,7 @@ function printGreen {
 function install() {
   clear
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
-  printGreen "Оновлюємо до версії v0.26.1 "
+  printGreen "Оновлюємо Lava"
   echo ""
   sudo systemctl stop lavad
 
@@ -25,6 +25,10 @@ function install() {
   make install
 
   sudo systemctl start lavad
+  sleep 2
+  printGreen "Версія вашої ноди:"
+  lavad version
+  echo ""
   
   printDelimiter
   printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
