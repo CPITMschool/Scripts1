@@ -9,14 +9,19 @@ function logo() {
 }
 
 function delete() {
-sudo systemctl stop gear
-sudo systemctl disable gear
-sudo systemctl disable gear
-sudo rm -r /root/.local/share/gear
-sudo rm -r /root/gear
+  sudo systemctl stop zetacored
+  sudo systemctl disable zetacored
+  sudo rm -rf $HOME/.zetacored
+  sudo rm -rf $HOME/zetacored
+  sudo rm -rf $HOME/zetacored
+  sudo rm -rf /etc/systemd/system/zetacored.service
+  sudo rm -rf /usr/local/bin/zetacored
+  sudo systemctl daemon-reload
 }
+
+
 
 logo
 delete
 
-printGreen "Gear node видалено"
+printGreen "Zetachain node видалено"
