@@ -28,7 +28,7 @@ fi
 
 sudo apt update && sudo apt install ocl-icd-opencl-dev libopencl-clang-dev libgomp1 -y
 cd $HOME
-wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.7.0-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.14-alpha
+wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.7.0-alpha/pulsar-ubuntu-x86_64-skylake-v0.7.0-alpha
 sudo chmod +x pulsar
 sudo mv pulsar /usr/local/bin/
 sudo rm -rf $HOME/.config/pulsar
