@@ -18,8 +18,9 @@ function install() {
 
   sudo apt update && sudo apt upgrade -y
   sudo apt install curl -y
-  sudo apt-get install nodejs -y
-  sudo apt-get install -f
+  sudo apt install git -y
+  source ~/.bashrc && sleep 2
+  sudo apt install screen
 
   echo ""
   printGreen "Встановлення Holograph..."
@@ -50,7 +51,6 @@ function done2() {
   printGreen "Поверніться до гайду, там буде більш детальна інструкція з поясненням" && sleep 10
  screen -S holograph bash -c 'sleep 2 && holograph operator:bond && printGreen "Нажимаємо Y - та створюємо бондинг у будь-якій з запропонованих мереж"'
 }
-
 
 clear
 logo

@@ -11,7 +11,7 @@ function logo() {
 function delete() {
   sudo systemctl stop subspaced 
   sudo systemctl disable subspaced
-  sudo rm -rf ~/.local/share/subspace*
+  sudo rm -rf /root/.local/share/pulsar
   sudo rm -rf /etc/systemd/system/subspace*
   sudo rm -rf /usr/local/bin/subspace*
 }
