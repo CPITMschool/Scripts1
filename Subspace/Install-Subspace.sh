@@ -11,7 +11,7 @@ function printGreen {
 logo
 
 function install() {
-printGreen "Розпочалось встановлення Subpsace Gemini 3f v0.6.14"
+printGreen "Розпочалось встановлення Gemini 3g v0.7.0"
 exists()
 {
   command -v "$1" >/dev/null 2>&1
@@ -28,7 +28,7 @@ fi
 
 sudo apt update && sudo apt install ocl-icd-opencl-dev libopencl-clang-dev libgomp1 -y
 cd $HOME
-wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.6.14-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.14-alpha
+wget -O pulsar https://github.com/subspace/pulsar/releases/download/v0.7.0-alpha/pulsar-ubuntu-x86_64-skylake-v0.6.14-alpha
 sudo chmod +x pulsar
 sudo mv pulsar /usr/local/bin/
 sudo rm -rf $HOME/.config/pulsar
@@ -62,7 +62,7 @@ sudo systemctl restart subspaced
 if [[ `service subspaced status | grep active` =~ "running" ]]; then
 echo ""
   echo "=================================================="
-  printGreen "Subspace Gemini 3f v0.6.14 успішно встановлено"
+  printGreen "Subspace Gemini 3g v0.7.0 успішно встановлено"
   printGreen "Порти які використовує ваша нода:  30333,30433,30533"
   echo ""
   printGreen "Корисні команди:"
