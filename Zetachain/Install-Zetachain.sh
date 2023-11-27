@@ -18,7 +18,7 @@ function install() {
   CHAIN_ID="athens_7001-1"
   CHAIN_DENOM="azeta"
   BINARY_NAME="zetacored"
-  BINARY_VERSION_TAG="v10.1.0"
+  BINARY_VERSION_TAG="v10.1.7"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
   sudo apt install -y make gcc jq curl git lz4 build-essential chrony unzip gzip
@@ -29,7 +29,7 @@ function install() {
   
   printGreen "Встановлення Zetachain"
   mkdir -p $HOME/go/bin
-  curl -L https://github.com/zeta-chain/node/releases/download/v10.1.0/zetacored_testnet-linux-amd64 > $HOME/go/bin/zetacored
+  curl -L https://github.com/zeta-chain/node/releases/download/v10.1.7/zetacored_testnet-linux-amd64 > $HOME/go/bin/zetacored
   chmod +x $HOME/go/bin/zetacored
 
   zetacored config chain-id $CHAIN_ID
