@@ -11,6 +11,7 @@ function logo() {
 function delete() {
  docker stop pathfinder-starknet-node-1
  docker rm pathfinder-starknet-node-1
+ rm -rf /root/pathfinder/pathfinder/
 }
 
 if [ -f $HOME/.sdd_StarkNet_do_not_remove ]; then
