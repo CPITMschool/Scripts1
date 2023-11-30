@@ -13,6 +13,8 @@ function install() {
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
   printGreen "Оновлюємо Lava"
   echo ""
+  sed -i 's/laddr = "tcp:\/\/0\.0\.0\.0:26656"/laddr = "tcp:\/\/0\.0\.0\.0:24656"/' /root/.lava/config/config.toml
+  sed -i 's/address = "localhost:9091"/address = "localhost:9191"/' /root/.lava/config/app.toml
   sudo systemctl stop lavad
 
   export LAVA_BINARY=lavad
