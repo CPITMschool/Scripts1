@@ -87,8 +87,15 @@ EOF
 
   lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
 
-  SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
-  curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
+  cd $HOME
+  apt install lz4
+  sudo systemctl stop lavad
+  cp $HOME/.lava/data/priv_validator_state.json $HOME/.lava/priv_validator_state.json.backup
+  rm -rf $HOME/.lava/data
+  curl -o - -L http://lava.snapshot.stavr.tech:1020/lava/lava-snap.tar.lz4 | lz4 -c -d - | tar -x -C $HOME/.lava --strip-components 2
+  mv $HOME/.lava/priv_validator_state.json.backup $HOME/.lava/data/priv_validator_state.json
+  wget -O $HOME/.lava/config/addrbook.json "https://raw.githubusercontent.com/obajay/nodes-Guides/main/Projects/Lava_Network/addrbook.json"
+  sudo systemctl restart lavad && journalctl -u lavad -f -o cat
 
   printGreen "Запускаємо ноду"
   sudo systemctl daemon-reload
