@@ -21,7 +21,7 @@ function install() {
   BINARY_VERSION_TAG="v0.30.2"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
-  sudo apt install -y curl git jq lz4 build-essential unzip
+  sudo apt install -y curl git jq lz4 build-essential unzip && apt install lz4
 
   bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
   source .bash_profile
@@ -88,14 +88,13 @@ EOF
   lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
 
   cd $HOME
-  apt install lz4
   sudo systemctl stop lavad
   cp $HOME/.lava/data/priv_validator_state.json $HOME/.lava/priv_validator_state.json.backup
   rm -rf $HOME/.lava/data
   curl -o - -L http://lava.snapshot.stavr.tech:1020/lava/lava-snap.tar.lz4 | lz4 -c -d - | tar -x -C $HOME/.lava --strip-components 2
   mv $HOME/.lava/priv_validator_state.json.backup $HOME/.lava/data/priv_validator_state.json
   wget -O $HOME/.lava/config/addrbook.json "https://raw.githubusercontent.com/obajay/nodes-Guides/main/Projects/Lava_Network/addrbook.json"
-  sudo systemctl restart lavad && journalctl -u lavad -f -o cat
+  
 
   printGreen "Запускаємо ноду"
   sudo systemctl daemon-reload
