@@ -21,11 +21,10 @@ function install() {
   BINARY_VERSION_TAG="v10.1.7"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
-  sudo apt install -y make gcc jq curl git lz4 build-essential chrony unzip gzip
-  if ! [ -x "$(command -v go)" ]; then
-  source <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
+  sudo apt install -y curl git jq lz4 build-essential unzip
+  bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
   source .bash_profile
-  fi
+
   
   printGreen "Встановлення Zetachain"
   mkdir -p $HOME/go/bin
@@ -69,6 +68,7 @@ zetacored tendermint unsafe-reset-all --home $HOME/.zetacored --keep-addr-book
 
 SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/zetachain-testnet/info.json | jq -r .fileName)
 curl "https://snapshots-testnet.nodejumper.io/zetachain-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.zetacored"
+
 sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:29658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:29657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:6360\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:29656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":29660\"%" $HOME/.zetacored/config/config.toml && sed -i.bak -e "s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:9390\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:9391\"%; s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:1617\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:8845\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:8846\"%; s%^address = \"127.0.0.1:8545\"%address = \"127.0.0.1:8845\"%; s%^ws-address = \"127.0.0.1:8546\"%ws-address = \"127.0.0.1:8846\"%" $HOME/.zetacored/config/app.toml && sed -i.bak -e "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:29657\"%" $HOME/.zetacored/config/client.toml 
 printGreen "Запускаємо ноду"
 sudo systemctl daemon-reload
