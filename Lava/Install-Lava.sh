@@ -18,10 +18,10 @@ function install() {
   CHAIN_ID="lava-testnet-2"
   CHAIN_DENOM="ulava"
   BINARY_NAME="lavad"
-  BINARY_VERSION_TAG="v0.27.0"
+  BINARY_VERSION_TAG="v0.30.2"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
-  sudo apt install -y curl git jq lz4 build-essential unzip
+  sudo apt install -y curl git jq lz4 build-essential unzip && apt install lz4
 
   bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
   source .bash_profile
@@ -33,7 +33,7 @@ function install() {
   rm -rf lava
   git clone https://github.com/lavanet/lava
   cd lava || return
-  git checkout v0.27.0
+  git checkout v0.30.2
   make install
 
   lavad config keyring-backend test
@@ -67,11 +67,9 @@ function install() {
     -e 's/seeds = ".*"/seeds = "3a445bfdbe2d0c8ee82461633aa3af31bc2b4dc0@testnet2-seed-node.lavanet.xyz:26656,e593c7a9ca61f5616119d6beb5bd8ef5dd28d62d@testnet2-seed-node2.lavanet.xyz:26656"/g' \
     $HOME/.lava/config/config.toml
 
-  sed -i -e 's/broadcast-mode = ".*"/broadcast-mode = "sync"/g' $HOME/.lava/config/config.toml
+sed -i -e 's/broadcast-mode = ".*"/broadcast-mode = "sync"/g' $HOME/.lava/config/config.toml
 
-
-
-  sudo tee /etc/systemd/system/lavad.service > /dev/null << EOF
+sudo tee /etc/systemd/system/lavad.service > /dev/null << EOF
 [Unit]
 Description=Lava Network Node
 After=network-online.target
@@ -85,21 +83,22 @@ LimitNOFILE=10000
 WantedBy=multi-user.target
 EOF
 
-  lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
+lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
 
-  SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
-  curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
+SNAP_NAME=$(curl -s https://snapshots-testnet.nodejumper.io/lava-testnet/info.json | jq -r .fileName)
+curl "https://snapshots-testnet.nodejumper.io/lava-testnet/${SNAP_NAME}" | lz4 -dc - | tar -xf - -C "$HOME/.lava"
+  
 
-  printGreen "Запускаємо ноду"
-  sudo systemctl daemon-reload
-  sudo systemctl enable lavad
-  sudo systemctl start lavad
+printGreen "Запускаємо ноду"
+sudo systemctl daemon-reload
+sudo systemctl enable lavad
+sudo systemctl start lavad
 
-  printDelimiter
-  printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
-  printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
-  printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
-  printDelimiter
+printDelimiter
+printGreen "Переглянути журнал логів:         sudo journalctl -u lavad -f -o cat"
+printGreen "Переглянути статус синхронізації: lavad status 2>&1 | jq .SyncInfo"
+printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
+printDelimiter
 }
 
 install
