@@ -26,11 +26,14 @@ function addip() {
         label: "$label"
 EOF
                 ;;
-            [Nn]* ) break;;
+            [Nn]* ) 
+                sudo systemctl restart prometheus
+                break;;
             * ) echo "Будь ласка, введіть Y або N.";;
         esac
     done
 }
+
 
 
 
