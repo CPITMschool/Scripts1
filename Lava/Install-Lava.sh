@@ -18,7 +18,7 @@ function install() {
   CHAIN_ID="lava-testnet-2"
   CHAIN_DENOM="ulava"
   BINARY_NAME="lavad"
-  BINARY_VERSION_TAG="v0.30.2"
+  BINARY_VERSION_TAG="v0.31.1"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
   sudo apt install -y curl git jq lz4 build-essential unzip && apt install lz4
