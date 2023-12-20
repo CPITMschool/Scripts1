@@ -13,12 +13,14 @@ function install() {
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
   printGreen "Оновлюємо Zetachain"
   echo ""
-  mkdir -p $HOME/go/bin
   sudo systemctl stop zetacored
+
+  mkdir -p $HOME/go/bin
   curl -L https://github.com/zeta-chain/node/releases/download/v11.0.0-rc/zetacored-linux-amd64 > $HOME/go/bin/zetacored
   chmod +x $HOME/go/bin/zetacored
 
   sudo systemctl start zetacored
+  sudo journalctl -u zetacored -f --no-hostname -o cat
   sleep 2
   printGreen "Версія вашої ноди:"
   zetacored version
