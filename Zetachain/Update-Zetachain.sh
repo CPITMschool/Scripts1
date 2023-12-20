@@ -20,7 +20,6 @@ function install() {
   chmod +x $HOME/go/bin/zetacored
 
   sudo systemctl start zetacored
-  sudo journalctl -u zetacored -f --no-hostname -o cat
   sleep 2
   printGreen "Версія вашої ноди:"
   zetacored version
