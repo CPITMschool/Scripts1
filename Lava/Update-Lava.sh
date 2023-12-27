@@ -23,7 +23,7 @@ function install() {
   rm -rf lava
   git clone https://github.com/lavanet/lava
   cd lava || return
-  git checkout v0.31.1
+  git checkout v0.32.0
   make install
 
   sudo systemctl start lavad
