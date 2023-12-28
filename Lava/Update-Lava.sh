@@ -13,19 +13,12 @@ function install() {
   source <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/logo.sh)
   printGreen "Оновлюємо Lava"
   echo ""
-  sed -i 's/laddr = "tcp:\/\/0\.0\.0\.0:26656"/laddr = "tcp:\/\/0\.0\.0\.0:24656"/' /root/.lava/config/config.toml
-  sed -i 's/address = "localhost:9091"/address = "localhost:9191"/' /root/.lava/config/app.toml
   sudo systemctl stop lavad
 
-  export LAVA_BINARY=lavad
-
-  cd || return
-  rm -rf lava
-  git clone https://github.com/lavanet/lava
-  cd lava || return
-  git checkout v0.32.0
-  make install
-
+  cd $HOME
+  wget -O lavad https://github.com/lavanet/lava/releases/download/v0.32.0/lavad-v0.32.0-linux-amd64
+  chmod +x $HOME/lavad
+  sudo mv $HOME/lavad $(which lavad)
   sudo systemctl start lavad
   sleep 2
   printGreen "Версія вашої ноди:"
