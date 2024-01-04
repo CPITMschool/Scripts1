@@ -16,8 +16,8 @@ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/main.s
 bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Install-Docker.sh) &>/dev/null
 printGreen "Оновлюємо репозиторій"
 cd $HOME/pathfinder
-git fetch
-git checkout v10.0.2-apikey
+git fetch origin https://github.com/eqlabs/pathfinder.git refs/tags/v0.10.2-apikey
+git checkout FETCH_HEAD
 printGreen "Зупиняємо стару версію StarkNet"
 sudo systemctl stop starknet &>/dev/null
 sudo systemctl disable starknet &>/dev/null
