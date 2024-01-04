@@ -17,7 +17,7 @@ bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Instal
 printGreen "Оновлюємо репозиторій"
 cd $HOME/pathfinder
 git fetch
-git checkout `curl https://api.github.com/repos/eqlabs/pathfinder/releases/latest -s | jq .name -r`
+git checkout v10.0.2-apikey
 printGreen "Зупиняємо стару версію StarkNet"
 sudo systemctl stop starknet &>/dev/null
 sudo systemctl disable starknet &>/dev/null
