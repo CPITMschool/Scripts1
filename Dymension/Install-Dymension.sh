@@ -81,7 +81,7 @@ function install() {
   printDelimiter
   printGreen "Переглянути журнал логів:         sudo journalctl -u dymd -f -o cat"
   printGreen "Переглянути статус синхронізації: dymd status 2>&1 | jq .SyncInfo"
-  printGreen "Обов'язково зробіть бекап вашого priv_validator_key.json, збережіть файл та скопіюйте в текстовому варіанті командою:
+  printGreen "Обов'язково зробіть бекап вашого priv_validator_key.json, збережіть файл та скопіюйте в текстовому варіанті командою:"
   printGreen "                                                                                                            cat $HOME/.dymension/config/priv_validator_key.json"
   printDelimiter
 }
