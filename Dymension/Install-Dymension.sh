@@ -44,23 +44,7 @@ function install() {
     -e 's|^pruning-interval *=.*|pruning-interval = "17"|' \
     $HOME/.dymension/config/app.toml
 
-  sed -i.bak -e "s%:1317%:2017%g; 
-  s%:8080%:8780%g;
-  s%:9090%:9790%g;
-  s%:9091%:9791%g;
-  s%:8545%:9245%g;
-  s%:8546%:9246%g;
-  s%:6065%:6765%g" $HOME/.dymension/config/app.toml	
-  sed -i.bak -e "s%:26658%:33658%g;
-  s%:26657%:33657%g;
-  s%:6060%:6760%g;
-  s%tcp://0.0.0.0:26656%tcp://0.0.0.0:33656%g;
-  s%:26660%:33660%g" $HOME/.dymension/config/config.toml
-  sed -i.bak -e "s%:26657%:33657%g" $HOME/.dymension/config/client.toml
-
-
   curl "https://snapshots-testnet.nodejumper.io/dymension-testnet/dymension-testnet_latest.tar.lz4" | lz4 -dc - | tar -xf - -C "$HOME/.dymension"
-
 
   sudo tee /etc/systemd/system/dymd.service > /dev/null << EOF
   [Unit]
