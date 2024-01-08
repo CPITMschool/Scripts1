@@ -10,7 +10,7 @@ function logo() {
 
 function delete() {
   rm $(which babylond)
-  rm -rf $HOME/babylon/
+  rm -rf $HOME/babylon
   rm -rf $HOME/.babylond
   rm /etc/systemd/system/babylond.service
 }
