@@ -16,6 +16,13 @@ function install() {
   printGreen "Введіть moniker для вашої ноди(Наприклад:Asapov):"
   read -r NODE_MONIKER
 
+  printGreen "Оновлення сервера та встановлення GO"
+  sudo apt update
+  sudo apt install -y curl git jq lz4 build-essential unzip
+
+  bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
+  source .bash_profile
+
   cd $HOME
   rm -rf babylon
   git clone https://github.com/babylonchain/babylon
@@ -84,15 +91,16 @@ WantedBy=multi-user.target
 EOF
 sudo systemctl daemon-reload
 sudo systemctl enable babylond.service
+source .bash_profile
 
 printGreen "Запускаємо ноду"
 sudo systemctl start babylond.service
-sudo journalctl -u babylond.service -f --no-hostname -o cat
-
 
 printDelimiter
 printGreen "Переглянути журнал логів:         sudo journalctl -u babylond -f -o cat"
 printGreen "Переглянути статус синхронізації: babylond status 2>&1 | jq .SyncInfo"
+echo -e "\e[1;32mВаша нода займає наступний набір портів(#7):\e[0m 2017,8780,9790,9791,9245,9246,6765,33658,33657,6760,33656,33660"
+echo "Запишіть значення портів, для можливості подальшого підселення космос нод, та уникнення конфліктів пов'язаних з портами"
 printDelimiter
 }
 
