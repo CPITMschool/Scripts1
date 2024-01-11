@@ -12,31 +12,49 @@ function update() {
 clear
 logo
 printGreen "Завантаження залежностей"
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/main.sh) &>/dev/null
-bash <(curl -s https://raw.githubusercontent.com/CPITMschool/Scripts/main/Install-Docker.sh) &>/dev/null
-printGreen "Оновлюємо репозиторій"
-cd $HOME/pathfinder
-git fetch origin https://github.com/eqlabs/pathfinder.git refs/tags/v0.10.2-apikey
-git checkout FETCH_HEAD
-printGreen "Зупиняємо стару версію StarkNet"
-sudo systemctl stop starknet &>/dev/null
-sudo systemctl disable starknet &>/dev/null
-rm -rf $HOME/pathfinder/py/.venv &>/dev/null
-printGreen "Створюємо env файл зі змінною Alchemy або infura"
+sudo apt update && sudo apt install pkg-config libssl-dev libzstd-dev protobuf-compiler -y
+#sudo add-apt-repository ppa:deadsnakes/ppa -y
+#sudo apt update && sudo apt install curl git tmux python3.10 python3.10-venv python3.10-dev build-essential libgmp-dev pkg-config libssl-dev -y
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y
+source $HOME/.cargo/env
 source $HOME/.bash_profile
-echo "PATHFINDER_ETHEREUM_API_URL=$ALCHEMY_KEY" > pathfinder-var.env
-printGreen "Завантажуємо останню версію docker image"
-docker-compose pull
-printGreen "Завантажили, переходимо до запуску"
-mkdir -p $HOME/pathfinder/pathfinder
-chown -R 1000.1000 .
-sleep 1
-docker-compose up -d
-echo ""
+rustup update stable --force
+
+cd ~/pathfinder
+git pull
+git fetch --all
+git checkout v0.10.3
+cargo build --release --bin pathfinder
+sudo mv ~/pathfinder/target/release/pathfinder /usr/local/bin/
+mkdir -p $HOME/.starknet/db
+
+echo "[Unit]
+Description=StarkNet
+After=network.target
+
+[Service]
+User=$USER
+Type=simple
+ExecStart=/usr/local/bin/pathfinder --http-rpc=\"0.0.0.0:9545\" --ethereum.url \"$ALCHEMY\" --data-directory \"$HOME/.starknet/db\"
+Restart=on-failure
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target" > $HOME/starknetd.service
+sudo mv $HOME/starknetd.service /etc/systemd/system/
+
+#cd py
+#python3.10 -m venv .venv
+#source .venv/bin/activate
+#PIP_REQUIRE_VIRTUALENV=true pip install -r requirements-dev.txt
+#pip install --upgrade pip
+sudo systemctl daemon-reload
+sudo systemctl restart starknetd
 echo "==========================================="
 printGreen  "Нода оновлена і запущена"
-printGreen "Перевірити версію ноди: docker exec -it pathfinder-starknet-node-1 pathfinder -V"
-printGreen "Або ж , якщо у вас назва контейнеру інша, тоді скористайтесь командою: docker exec -it pathfinder_starknet-node_1 pathfinder -V"
+printGreen "Перевірити версію ноди: pathfinder -V"
+printGreen "Перевірити журнал логів: journalctl -u starknetd -f
+"
 echo "==========================================="
 }
 update
