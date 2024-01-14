@@ -34,7 +34,7 @@ function install() {
   dymd config chain-id froopyland_100-1
   dymd config keyring-backend test
 
-  dymd init "Your Node Name" --chain-id froopyland_100-1
+  dymd init $NODE_MONIKER --chain-id froopyland_100-1
 
   curl -L https://snapshots-testnet.nodejumper.io/dymension-testnet/genesis.json > $HOME/.dymension/config/genesis.json
   curl -L https://snapshots-testnet.nodejumper.io/dymension-testnet/addrbook.json > $HOME/.dymension/config/addrbook.json
@@ -75,18 +75,18 @@ EOF
 
   #Change port #8
   sed -i.bak -e "s%:1317%:2117%g; 
-  s%:8080%:8880%g;
-  s%:9090%:9890%g;
-  s%:9091%:9891%g;
-  s%:8545%:9345%g;
-  s%:8546%:9346%g;
-  s%:6065%:6865%g" $HOME/.dymension/config/app.toml	
-  sed -i.bak -e "s%:26658%:34658%g;
-  s%:26657%:34657%g;
-  s%:6060%:6860%g;
-  s%tcp://0.0.0.0:26656%tcp://0.0.0.0:34656%g;
-  s%:26660%:34660%g" $HOME/.dymension/config/config.toml
-  sed -i.bak -e "s%:26657%:34657%g" $HOME/.dymension/config/client.toml
+s%:8080%:8880%g;
+s%:9090%:9890%g;
+s%:9091%:9891%g;
+s%:8545%:9345%g;
+s%:8546%:9346%g;
+s%:6065%:6865%g" $HOME/.dymension/config/app.toml	
+sed -i.bak -e "s%:26658%:34658%g;
+s%:26657%:34657%g;
+s%:6060%:6860%g;
+s%tcp://0.0.0.0:26656%tcp://0.0.0.0:34656%g;
+s%:26660%:34660%g" $HOME/.dymension/config/config.toml
+sed -i.bak -e "s%:26657%:34657%g" $HOME/.dymension/config/client.toml
   echo "" 
 
   printGreen "Запускаємо ноду"
