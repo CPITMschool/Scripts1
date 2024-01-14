@@ -56,6 +56,7 @@ function install() {
   sudo systemctl enable dymd.service
 
   sudo systemctl start dymd.service
+  [ -e ~/.bash_profile ] || touch ~/.bash_profile
   source .bash_profile
 
   #Change port #8
