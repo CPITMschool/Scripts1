@@ -76,7 +76,7 @@ function install() {
   sed -i.bak -e "s%:26657%:34657%g" $HOME/.dymension/config/client.toml
   echo "" 
   
-  sudo tee /etc/systemd/system/dymd.service > /dev/null << EOF
+  sudo tee /etc/systemd/system/dymd.service > /dev/null <<EOF
   [Unit]
   Description=Dymension node service
   After=network-online.target
