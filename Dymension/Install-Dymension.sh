@@ -90,6 +90,7 @@ function install() {
   WantedBy=multi-user.target
   EOF
 
+
   sudo systemctl daemon-reload
   sudo systemctl enable dymd.service
   source .bash_profile
