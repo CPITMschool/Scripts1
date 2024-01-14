@@ -49,21 +49,11 @@ function install() {
     -e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
     $HOME/.dymension/config/app.toml
 
-  curl "https://snapshots-testnet.nodejumper.io/dymension-testnet/dymension-testnet_latest.tar.lz4" | lz4 -dc - | tar -xf - -C "$HOME/.dymension"
+  curl -L https://snapshots.kjnodes.com/dymension-testnet/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.dymension
+  [[ -f $HOME/.dymension/data/upgrade-info.json ]] && cp $HOME/.dymension/data/upgrade-info.json $HOME/.dymension/cosmovisor/genesis/upgrade-info.json
 
-  sudo tee /etc/systemd/system/dymd.service > /dev/null << EOF
-  [Unit]
-  Description=Dymension node service
-  After=network-online.target
-  [Service]
-  User=$USER
-  ExecStart=$(which dymd) start
-  Restart=on-failure
-  RestartSec=10
-  LimitNOFILE=65535
-  [Install]
-  WantedBy=multi-user.target
-  EOF
+
+ 
   sudo systemctl daemon-reload
   sudo systemctl enable dymd.service
 
@@ -85,10 +75,26 @@ function install() {
   s%:26660%:34660%g" $HOME/.dymension/config/config.toml
   sed -i.bak -e "s%:26657%:34657%g" $HOME/.dymension/config/client.toml
   echo "" 
+  
+  sudo tee /etc/systemd/system/dymd.service > /dev/null << EOF
+  [Unit]
+  Description=Dymension node service
+  After=network-online.target
+  [Service]
+  User=$USER
+  ExecStart=$(which dymd) start
+  Restart=on-failure
+  RestartSec=10
+  LimitNOFILE=65535
+  [Install]
+  WantedBy=multi-user.target
+  EOF
 
-  printGreen "Запускаємо ноду"
   sudo systemctl daemon-reload
   sudo systemctl enable dymd.service
+  source .bash_profile
+  
+  printGreen "Запускаємо ноду"
   sudo systemctl start dymd.service
 
   printDelimiter
