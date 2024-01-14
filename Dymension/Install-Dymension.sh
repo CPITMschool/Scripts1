@@ -33,40 +33,37 @@ function install() {
 
   dymd config chain-id froopyland_100-1
   dymd config keyring-backend test
-
   dymd init $NODE_MONIKER --chain-id froopyland_100-1
 
   curl -L https://snapshots-testnet.nodejumper.io/dymension-testnet/genesis.json > $HOME/.dymension/config/genesis.json
   curl -L https://snapshots-testnet.nodejumper.io/dymension-testnet/addrbook.json > $HOME/.dymension/config/addrbook.json
 
-  sed -i \
-    -e 's|^seeds *=.*|seeds = "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com,92308bad858b8886e102009bbb45994d57af44e7@rpc-t.dymension.nodestake.top:666,284313184f63d9f06b218a67a0e2de126b64258d@seeds.silknodes.io:26157"|' \
-    -e 's|^peers *=.*|peers = ""|' \
-    $HOME/.dymension/config/config.toml
+  sed -i -e "s|^seeds *=.*|seeds = \"3f472746f46493309650e5a033076689996c8881@dymension-testnet.rpc.kjnodes.com:14659\"|" $HOME/.dymension/config/config.toml
 
-  sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.01udym"|' $HOME/.dymension/config/app.toml
+  sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.025udym,0.025uatom\"|" $HOME/.dymension/config/app.toml
 
   sed -i \
     -e 's|^pruning *=.*|pruning = "custom"|' \
     -e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
-    -e 's|^pruning-interval *=.*|pruning-interval = "17"|' \
+    -e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
+    -e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
     $HOME/.dymension/config/app.toml
 
   curl "https://snapshots-testnet.nodejumper.io/dymension-testnet/dymension-testnet_latest.tar.lz4" | lz4 -dc - | tar -xf - -C "$HOME/.dymension"
 
   sudo tee /etc/systemd/system/dymd.service > /dev/null << EOF
-[Unit]
-Description=Dymension node service
-After=network-online.target
-[Service]
-User=$USER
-ExecStart=$(which dymd) start
-Restart=on-failure
-RestartSec=10
-LimitNOFILE=65535
-[Install]
-WantedBy=multi-user.target
-EOF
+  [Unit]
+  Description=Dymension node service
+  After=network-online.target
+  [Service]
+  User=$USER
+  ExecStart=$(which dymd) start
+  Restart=on-failure
+  RestartSec=10
+  LimitNOFILE=65535
+  [Install]
+  WantedBy=multi-user.target
+  EOF
   sudo systemctl daemon-reload
   sudo systemctl enable dymd.service
 
