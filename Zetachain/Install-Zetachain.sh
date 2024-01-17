@@ -74,10 +74,13 @@ printGreen "Запускаємо ноду"
 sudo systemctl daemon-reload
 sudo systemctl enable zetacored
 sudo systemctl start zetacored
+source $HOME/.bash_profile
 
   printDelimiter
   printGreen "Переглянути журнал логів:         sudo journalctl -u zetacored -f -o cat"
   printGreen "Переглянути статус синхронізації: zetacored status 2>&1 | jq .SyncInfo"
+  printGreen "Версія вашої ноди:"
+  zetacored version
   printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
   printDelimiter
 }
