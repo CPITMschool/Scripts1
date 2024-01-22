@@ -18,7 +18,7 @@ function install() {
   CHAIN_ID="athens_7001-1"
   CHAIN_DENOM="azeta"
   BINARY_NAME="zetacored"
-  BINARY_VERSION_TAG="v11.0.0-rc"
+  BINARY_VERSION_TAG="v12.0.0-rc"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
   sudo apt install -y curl git jq lz4 build-essential unzip
@@ -28,7 +28,7 @@ function install() {
   
   printGreen "Встановлення Zetachain"
   mkdir -p $HOME/go/bin
-  curl -L https://github.com/zeta-chain/node/releases/download/v11.0.0-rc/zetacored-linux-amd64 > $HOME/go/bin/zetacored
+  curl -L https://github.com/zeta-chain/node/releases/download/v12.0.0-rc/zetacored-linux-amd64 > $HOME/go/bin/zetacored
   chmod +x $HOME/go/bin/zetacored
 
   zetacored config chain-id $CHAIN_ID
@@ -74,10 +74,13 @@ printGreen "Запускаємо ноду"
 sudo systemctl daemon-reload
 sudo systemctl enable zetacored
 sudo systemctl start zetacored
+source $HOME/.bash_profile
 
   printDelimiter
   printGreen "Переглянути журнал логів:         sudo journalctl -u zetacored -f -o cat"
   printGreen "Переглянути статус синхронізації: zetacored status 2>&1 | jq .SyncInfo"
+  printGreen "Версія вашої ноди:"
+  zetacored version
   printGreen "В журналі логів спочатку ви можете побачити помилку Connection is closed. Але за 5-10 секунд нода розпочне синхронізацію"
   printDelimiter
 }

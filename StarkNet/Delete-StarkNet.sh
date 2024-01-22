@@ -12,6 +12,12 @@ function delete() {
  docker stop pathfinder-starknet-node-1
  docker rm pathfinder-starknet-node-1
  rm -rf /root/pathfinder/pathfinder/
+ systemctl stop starknetd
+ systemctl disable starknetd
+ rm -rf ~/pathfinder/
+ rm -rf /etc/systemd/system/starknetd.service
+ rm -rf /usr/local/bin/pathfinder
+ rm -rf $HOME/.starknet/db
 }
 
 if [ -f $HOME/.sdd_StarkNet_do_not_remove ]; then
