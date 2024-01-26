@@ -18,7 +18,7 @@ function install() {
   CHAIN_ID="athens_7001-1"
   CHAIN_DENOM="azeta"
   BINARY_NAME="zetacored"
-  BINARY_VERSION_TAG="v12.0.0-rc"
+  BINARY_VERSION_TAG="v12.1.0"
   printGreen "Встановлення необхідних залежностей"
   sudo apt update
   sudo apt install -y curl git jq lz4 build-essential unzip
