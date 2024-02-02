@@ -11,7 +11,7 @@ function printGreen {
 logo
 
 function install() {
-printGreen "Розпочалось встановлення Gemini 3g v0.7.4"
+printGreen "Розпочалось встановлення Gemini 3h"
 exists()
 {
   command -v "$1" >/dev/null 2>&1
