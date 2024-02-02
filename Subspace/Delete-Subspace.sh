@@ -9,9 +9,9 @@ function logo() {
 }
 
 function delete() {
-  sudo systemctl stop subspaced 
-  sudo systemctl disable subspaced
-  sudo rm -rf /root/.local/share/pulsar
+  sudo systemctl stop subspaced subspaced-farmer
+  sudo systemctl disable subspaced subspaced-farmer
+  sudo rm -rf ~/.local/share/subspace*
   sudo rm -rf /etc/systemd/system/subspace*
   sudo rm -rf /usr/local/bin/subspace*
 }
