@@ -20,8 +20,13 @@ function install() {
   sudo apt update
   sudo apt install -y curl git jq lz4 build-essential unzip
 
+  if ! command -v go &> /dev/null; then
   bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
-  source ~/.bash_profile
+else
+  echo "Go вже встановлено."
+fi
+
+source ~/.bash_profile
 
   cd $HOME
   rm -rf babylon
