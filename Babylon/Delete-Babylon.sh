@@ -9,9 +9,12 @@ function logo() {
 }
 
 function delete() {
-  rm -rf $HOME/babylon
-  rm -rf $HOME/.babylond
-  rm /etc/systemd/system/babylond.service
+  sudo systemctl stop babylond
+  sudo systemctl disable babylond
+  sudo rm /etc/systemd/system/babylond.service
+  sudo systemctl daemon-reload
+  rm -rf $HOME/.babylond 
+  rm -rf babylon && sudo rm -rf $(which babylond) 
 }
 
 logo
