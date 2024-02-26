@@ -21,7 +21,7 @@ function install() {
   sudo apt install -y curl git jq lz4 build-essential unzip
 
   bash <(curl -s "https://raw.githubusercontent.com/nodejumper-org/cosmos-scripts/master/utils/go_install.sh")
-  source .bash_profile
+  source ~/.bash_profile
 
   cd $HOME
   rm -rf babylon
@@ -39,13 +39,10 @@ function install() {
   curl -L https://snapshots-testnet.nodejumper.io/babylon-testnet/addrbook.json > $HOME/.babylond/config/addrbook.json
 
   
-sed -i \
-  -e 's|^seeds *=.*|seeds = ""|' \
-  -e 's|^peers *=.*|peers = "03ce5e1b5be3c9a81517d415f65378943996c864@18.207.168.204:26656,a5fabac19c732bf7d814cf22e7ffc23113dc9606@34.238.169.221:26656,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:20656"|' \
-  $HOME/.babylond/config/config.toml
+  sed -i -e 's|^seeds *=.*|seeds = "49b4685f16670e784a0fe78f37cd37d56c7aff0e@3.14.89.82:26656,9cb1974618ddd541c9a4f4562b842b96ffaf1446@3.16.63.237:26656"|' $HOME/.babylond/config/config.toml
 
 
-sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.001ubbn"|' $HOME/.babylond/config/app.toml
+  sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.00001ubbn"|' $HOME/.babylond/config/app.toml
 
 
 sed -i \
@@ -55,7 +52,7 @@ sed -i \
   $HOME/.babylond/config/app.toml
 
 
-sed -i 's|^network *=.*|network = "mainnet"|g' $HOME/.babylond/config/app.toml
+sed -i 's|^network *=.*|network = "signet"|g' $HOME/.babylond/config/app.toml
 
 
 curl "https://snapshots-testnet.nodejumper.io/babylon-testnet/babylon-testnet_latest.tar.lz4" | lz4 -dc - | tar -xf - -C "$HOME/.babylond"
