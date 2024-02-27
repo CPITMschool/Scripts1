@@ -60,6 +60,7 @@ sed -i.bak -e "s%:26657%:20657%g" $HOME/.babylond/config/client.toml
 
 curl "https://snapshots-testnet.nodejumper.io/babylon-testnet/babylon-testnet_latest.tar.lz4" | lz4 -dc - | tar -xf - -C "$HOME/.babylond"
 
+
 sudo tee /etc/systemd/system/babylond.service > /dev/null << EOF
 [Unit]
 Description=Babylon node service
