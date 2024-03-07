@@ -1,6 +1,6 @@
 {
-  "name": "Nibiru",
+  "name": "Side",
   "cpu": "4 CPU",
-  "ram": "16 GB RAM",
-  "disk": "1000 GB"
+  "ram": "12 GB RAM",
+  "disk": "100 GB"
 }
