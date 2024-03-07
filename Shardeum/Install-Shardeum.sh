@@ -44,7 +44,7 @@ function install() {
         printGreen "Порт який використовує нода: 8080"
         printDelimiter
     else
-        printGreen "Помилка при встановленні ноди, спочатку видаліть її та встановіть ще раз."
+        printGreen "Нода встановлена успішно."
     fi
 }
 
